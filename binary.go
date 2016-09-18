@@ -45,6 +45,14 @@ func (c Bit) RGBA() (r, g, b, a uint32) {
 	return v, v, v, 0xffff
 }
 
+// Other returns a Bit with the other value.
+func (c Bit) Other() Bit {
+	if c.v == 0 {
+		return White
+	}
+	return Black
+}
+
 // Various binary models with different thresholds.
 var (
 	BinaryModelLowThreshold    = NewBinaryModel(37)
@@ -102,14 +110,14 @@ func (b *Binary) Bounds() image.Rectangle { return b.Rect }
 // At(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the grid.
 // At(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
 func (b *Binary) At(x, y int) color.Color {
-	return b.BinaryAt(x, y)
+	return b.BitAt(x, y)
 }
 
-// BinaryAt returns the Bit color of the pixel at (x, y).
-// BinaryAt(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the
-// grid. BinaryAt(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right
+// BitAt returns the Bit color of the pixel at (x, y).
+// BitAt(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the
+// grid. BitAt(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right
 // one.
-func (b *Binary) BinaryAt(x, y int) Bit {
+func (b *Binary) BitAt(x, y int) Bit {
 	if !(image.Point{x, y}.In(b.Rect)) {
 		return Bit{}
 	}
