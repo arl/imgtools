@@ -14,6 +14,12 @@ func check(t *testing.T, err error) {
 	}
 }
 
+func checkB(b *testing.B, err error) {
+	if err != nil {
+		b.Fatal(err)
+	}
+}
+
 func loadPNG(filename string) (image.Image, error) {
 	var (
 		img image.Image
@@ -65,4 +71,23 @@ func diff(m0, m1 image.Image) error {
 		}
 	}
 	return nil
+}
+
+func newBinaryFromString(ss []string) *Binary {
+	w, h := len(ss[0]), len(ss)
+	for i := range ss {
+		if len(ss[i]) != w {
+			panic("all strings should have the same length")
+		}
+	}
+
+	bin := NewBinary(image.Rect(0, 0, w, h))
+	for y := range ss {
+		for x := range ss[y] {
+			if ss[y][x] == '1' {
+				bin.SetBit(x, y, White)
+			}
+		}
+	}
+	return bin
 }
