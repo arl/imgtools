@@ -6,11 +6,16 @@ import (
 	"image/draw"
 )
 
+// Black and White are the only colors that a Binary image pixel can have.
 var (
 	Black = Bit{0}
 	White = Bit{255}
-	Off   = Bit{0}
-	On    = Bit{255}
+)
+
+// Alias colors for Black and White
+var (
+	Off = Black
+	On  = White
 )
 
 // Bit represents a Black or White only binary color.
@@ -18,6 +23,9 @@ type Bit struct {
 	v byte
 }
 
+// RGBA returns the red, green, blue and alpha values for a Bit color.
+//
+// alpha is always 0xffff (fully opaque) and r, g, b are all 0 or all 0xffff.
 func (c Bit) RGBA() (r, g, b, a uint32) {
 	v := uint32(c.v)
 	v |= v << 8
@@ -26,10 +34,10 @@ func (c Bit) RGBA() (r, g, b, a uint32) {
 
 // Various binary models with different thresholds.
 var (
-	BinaryModelLowThreshold    binaryModel = NewBinaryModel(37)
-	BinaryModelMediumThreshold binaryModel = NewBinaryModel(97)
-	BinaryModelHighThreshold   binaryModel = NewBinaryModel(197)
-	BinaryModel                binaryModel = BinaryModelMediumThreshold
+	BinaryModelLowThreshold    = NewBinaryModel(37)
+	BinaryModelMediumThreshold = NewBinaryModel(97)
+	BinaryModelHighThreshold   = NewBinaryModel(197)
+	BinaryModel                = BinaryModelMediumThreshold
 )
 
 type binaryModel struct {
@@ -49,6 +57,10 @@ func (m binaryModel) Convert(c color.Color) color.Color {
 	return Black
 }
 
+// NewBinaryModel creates a new binaryModel that converts any color to a Bit.
+//
+// binaryModel is an opaque (as in not exported) type. The threshold is the
+// limit over which source colors are converted to White, under to Black.
 func NewBinaryModel(threshold uint8) binaryModel {
 	return binaryModel{threshold}
 }
@@ -66,14 +78,24 @@ type Binary struct {
 	model binaryModel
 }
 
+// ColorModel returns the image.Image's color model.
 func (b *Binary) ColorModel() color.Model { return b.model }
 
+// Bounds returns the domain for which At can return non-zero color.
+// The bounds do not necessarily contain the point (0, 0).
 func (b *Binary) Bounds() image.Rectangle { return b.Rect }
 
+// At returns the color of the pixel at (x, y).
+// At(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the grid.
+// At(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
 func (b *Binary) At(x, y int) color.Color {
 	return b.BinaryAt(x, y)
 }
 
+// BinaryAt returns the Bit color of the pixel at (x, y).
+// BinaryAt(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the
+// grid. BinaryAt(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right
+// one.
 func (b *Binary) BinaryAt(x, y int) Bit {
 	if !(image.Point{x, y}.In(b.Rect)) {
 		return Bit{}
@@ -88,6 +110,9 @@ func (b *Binary) PixOffset(x, y int) int {
 	return (y-b.Rect.Min.Y)*b.Stride + (x-b.Rect.Min.X)*1
 }
 
+// Set sets the color of the pixel at (x, y).
+//
+// c is converted to Bit using the Binary image color model.
 func (b *Binary) Set(x, y int, c color.Color) {
 	if !(image.Point{x, y}.In(b.Rect)) {
 		return
@@ -96,6 +121,7 @@ func (b *Binary) Set(x, y int, c color.Color) {
 	b.Pix[i] = b.model.Convert(c).(Bit).v
 }
 
+// SetBit sets the Bit of the pixel at (x, y).
 func (b *Binary) SetBit(x, y int, c Bit) {
 	if !(image.Point{x, y}.In(b.Rect)) {
 		return
