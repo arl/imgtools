@@ -1,8 +1,8 @@
 // Package binimg proposes an in-memory binary image format, implementing the
 // image.Image interface, alongside a set of efficient tools to scan
-// rectangular regions of such images. A binary image is an image that has only
-// two possible values for each pixel, generally Black and White, though any
-// two colors can be used.
+// rectangular regions of such images. A binary image has only two possible
+// colors for each pixel, generally Black and White, though any two colors can
+// be used.
 //
 // Though the information represented by each pixel could be stored as a single
 // bit, and thus take the smallest memory footprint, choice has been made to
