@@ -13,7 +13,7 @@ var (
 	On    = Bit{255}
 )
 
-// Bit represents an 1-bit binary color.
+// Bit represents a Black or White only binary color.
 type Bit struct {
 	v byte
 }
@@ -26,10 +26,10 @@ func (c Bit) RGBA() (r, g, b, a uint32) {
 
 // Various binary models with different thresholds.
 var (
-	BinaryModelLowThreshold    color.Model = newBinaryModel(37)
-	BinaryModelMediumThreshold color.Model = newBinaryModel(97)
-	BinaryModelHighThreshold   color.Model = newBinaryModel(167)
-	BinaryModel                color.Model = BinaryModelMediumThreshold
+	BinaryModelLowThreshold    binaryModel = NewBinaryModel(37)
+	BinaryModelMediumThreshold binaryModel = NewBinaryModel(97)
+	BinaryModelHighThreshold   binaryModel = NewBinaryModel(197)
+	BinaryModel                binaryModel = BinaryModelMediumThreshold
 )
 
 type binaryModel struct {
@@ -49,7 +49,7 @@ func (m binaryModel) Convert(c color.Color) color.Color {
 	return Black
 }
 
-func newBinaryModel(threshold uint8) binaryModel {
+func NewBinaryModel(threshold uint8) binaryModel {
 	return binaryModel{threshold}
 }
 
@@ -62,9 +62,11 @@ type Binary struct {
 	Stride int
 	// Rect is the image's bounds.
 	Rect image.Rectangle
+
+	model binaryModel
 }
 
-func (b *Binary) ColorModel() color.Model { return BinaryModel }
+func (b *Binary) ColorModel() color.Model { return b.model }
 
 func (b *Binary) Bounds() image.Rectangle { return b.Rect }
 
@@ -91,7 +93,7 @@ func (b *Binary) Set(x, y int, c color.Color) {
 		return
 	}
 	i := b.PixOffset(x, y)
-	b.Pix[i] = BinaryModel.Convert(c).(Bit).v
+	b.Pix[i] = b.model.Convert(c).(Bit).v
 }
 
 func (b *Binary) SetBit(x, y int, c Bit) {
@@ -129,15 +131,29 @@ func (b *Binary) Opaque() bool {
 func NewBinary(r image.Rectangle) *Binary {
 	w, h := r.Dx(), r.Dy()
 	pix := make([]uint8, 1*w*h)
-	return &Binary{pix, 1 * w, r}
+	return &Binary{pix, 1 * w, r, BinaryModel}
 }
 
-//
+// NewCustomBinary returns a new Binary image with the given bounds and binary
+// model.
+func NewCustomBinary(r image.Rectangle, model binaryModel) *Binary {
+	w, h := r.Dx(), r.Dy()
+	pix := make([]uint8, 1*w*h)
+	return &Binary{pix, 1 * w, r, model}
+}
+
+// NewFromImage returns the binary image that is the conversion of the given
+// source image.
 func NewFromImage(src image.Image) *Binary {
-	var (
-		dst *Binary
-	)
-	dst = NewBinary(src.Bounds())
+	dst := NewBinary(src.Bounds())
+	draw.Draw(dst, dst.Bounds(), src, image.Point{}, draw.Src)
+	return dst
+}
+
+// NewCustomFromImage returns the binary image that is the conversion of the
+// given source image with the specified binary model.
+func NewCustomFromImage(src image.Image, model binaryModel) *Binary {
+	dst := NewCustomBinary(src.Bounds(), model)
 	draw.Draw(dst, dst.Bounds(), src, image.Point{}, draw.Src)
 	return dst
 }
