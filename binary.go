@@ -5,7 +5,7 @@
 // be used.
 //
 // Though the information represented by each pixel could be stored as a single
-// bit, and thus take the smallest memory footprint, choice has been made to
+// bit, and thus take a smaller memory footprint, choice has been made to
 // represent Bit pixels as byte values, that can either be 0 (Black or Off) or
 // 255 (White or On), mostly for simplicity reasons.
 //
