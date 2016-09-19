@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func testIsWhite(t *testing.T, newScanner func(*Binary) Scanner) {
+func testIsWhite(t *testing.T, newScanner func(image.Image) Scanner) {
 	ss := []string{
 		"000",
 		"100",
@@ -35,7 +35,7 @@ func testIsWhite(t *testing.T, newScanner func(*Binary) Scanner) {
 	}
 }
 
-func testIsBlack(t *testing.T, newScanner func(*Binary) Scanner) {
+func testIsBlack(t *testing.T, newScanner func(image.Image) Scanner) {
 	ss := []string{
 		"111",
 		"011",
@@ -65,7 +65,7 @@ func testIsBlack(t *testing.T, newScanner func(*Binary) Scanner) {
 	}
 }
 
-func testIsUniform(t *testing.T, newScanner func(*Binary) Scanner) {
+func testIsUniform(t *testing.T, newScanner func(image.Image) Scanner) {
 	ss := []string{
 		"111",
 		"011",
@@ -99,18 +99,36 @@ func testIsUniform(t *testing.T, newScanner func(*Binary) Scanner) {
 }
 
 func TestLinesScannerIsWhite(t *testing.T) {
-	testIsWhite(t, func(bimg *Binary) Scanner { return NewLinesScanner(bimg) })
+	testIsWhite(t,
+		func(img image.Image) Scanner {
+			s, err := NewScanner(img)
+			check(t, err)
+			return s
+		},
+	)
 }
 
 func TestLinesScannerIsBlack(t *testing.T) {
-	testIsBlack(t, func(bimg *Binary) Scanner { return NewLinesScanner(bimg) })
+	testIsBlack(t,
+		func(img image.Image) Scanner {
+			s, err := NewScanner(img)
+			check(t, err)
+			return s
+		},
+	)
 }
 
 func TestLinesScannerIsUniform(t *testing.T) {
-	testIsUniform(t, func(bimg *Binary) Scanner { return NewLinesScanner(bimg) })
+	testIsUniform(t,
+		func(img image.Image) Scanner {
+			s, err := NewScanner(img)
+			check(t, err)
+			return s
+		},
+	)
 }
 
-func benchmarkScanner(b *testing.B, pngfile string, newScanner func(*Binary) Scanner) {
+func benchmarkScanner(b *testing.B, pngfile string, newScanner func(image.Image) Scanner) {
 	img, err := loadPNG(pngfile)
 	checkB(b, err)
 
@@ -126,5 +144,10 @@ func benchmarkScanner(b *testing.B, pngfile string, newScanner func(*Binary) Sca
 }
 
 func BenchmarkLinesScanner(b *testing.B) {
-	benchmarkScanner(b, "./testdata/big.png", func(bimg *Binary) Scanner { return NewLinesScanner(bimg) })
+	benchmarkScanner(b, "./testdata/big.png",
+		func(img image.Image) Scanner {
+			s, err := NewScanner(img)
+			checkB(b, err)
+			return s
+		})
 }
