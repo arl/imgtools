@@ -174,8 +174,8 @@ func (b *Binary) Opaque() bool {
 	return true
 }
 
-// NewBinary returns a new Binary image with the given bounds.
-func NewBinary(r image.Rectangle) *Binary {
+// New returns a new Binary image with the given bounds.
+func New(r image.Rectangle) *Binary {
 	w, h := r.Dx(), r.Dy()
 	pix := make([]uint8, 1*w*h)
 	return &Binary{pix, 1 * w, r, BinaryModel}
@@ -192,7 +192,7 @@ func NewCustomBinary(r image.Rectangle, model binaryModel) *Binary {
 // NewFromImage returns the binary image that is the conversion of the given
 // source image.
 func NewFromImage(src image.Image) *Binary {
-	dst := NewBinary(src.Bounds())
+	dst := New(src.Bounds())
 	draw.Draw(dst, dst.Bounds(), src, image.Point{}, draw.Src)
 	return dst
 }
