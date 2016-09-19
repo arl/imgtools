@@ -100,7 +100,7 @@ func TestBitOperations(t *testing.T) {
 	bin.Set(x, y, blackRGBA)
 	bit = BinaryModel.Convert(bin.At(x, y)).(Bit)
 	if bit != Black {
-		t.Errorf("expected pixel at (%d,%d) to be Black, got %v", x, bit)
+		t.Errorf("expected pixel at (%d,%d) to be Black, got %v", x, y, bit)
 	}
 
 	// get/set pixel from Bit
