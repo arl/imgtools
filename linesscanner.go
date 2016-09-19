@@ -10,10 +10,12 @@ type LinesScanner struct {
 	bimg *Binary
 }
 
+// NewLinesScanner returns a new LinesScanner on the given Binary.
 func NewLinesScanner(bimg *Binary) *LinesScanner {
 	return &LinesScanner{bimg: bimg}
 }
 
+// UniformColor reports wether all the pixels of given region are of the color c.
 func (s *LinesScanner) UniformColor(r image.Rectangle, c Bit) bool {
 	// we want the other color for bytes.IndexBytes
 	other := c.Other().v
@@ -28,6 +30,9 @@ func (s *LinesScanner) UniformColor(r image.Rectangle, c Bit) bool {
 	return true
 }
 
+// Uniform reports wether the given region is uniform. If is the case, the
+// uniform color bit is returned, otherwise the returned Bit is not
+// significative (always the zero value of Bit).
 func (s *LinesScanner) Uniform(r image.Rectangle) (bool, Bit) {
 	// bit color of the first pixel (top-left)
 	first := s.bimg.BitAt(r.Min.X, r.Min.Y)
