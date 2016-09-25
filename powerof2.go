@@ -31,31 +31,41 @@ func pow2roundup(x int) int {
 // Note: if src dimensions is already a power-of-2 square image, it is returned
 // as-is.
 func PowerOf2Image(src image.Image, pad color.Color) image.Image {
-	var (
-		dst    *image.RGBA
-		maxdim int
-	)
-
-	maxdim = src.Bounds().Dx()
-	if src.Bounds().Dy() > maxdim {
-		maxdim = src.Bounds().Dy()
-	}
-	maxdim = pow2roundup(maxdim)
-
-	if maxdim == src.Bounds().Dx() && maxdim == src.Bounds().Dy() {
-		// nothing to do, image is already a power-of-2 square
+	if IsPowerOf2Image(src) {
 		return src
 	}
+
+	var (
+		dst  *image.RGBA
+		side int // square side
+	)
+
+	side = src.Bounds().Dx()
+	if src.Bounds().Dy() > side {
+		side = src.Bounds().Dy()
+	}
+	side = pow2roundup(side)
 
 	// compute the dimensions
 	x, y := src.Bounds().Min.X, src.Bounds().Min.Y
 
 	// create a uniform square image at those dimensions
-	dst = image.NewRGBA(image.Rect(x, y, x+maxdim, y+maxdim))
+	dst = image.NewRGBA(image.Rect(x, y, x+side, y+side))
 	cpad := src.ColorModel().Convert(pad)
 	draw.Draw(dst, dst.Bounds(), &image.Uniform{cpad}, image.ZP, draw.Src)
 
 	// now draw the original image onto it
 	draw.Draw(dst, src.Bounds(), src, image.ZP, draw.Src)
 	return dst
+}
+
+// IsPowerOf2Image reports wether img is a power-of-2 square image or not.
+func IsPowerOf2Image(img image.Image) bool {
+	maxdim := img.Bounds().Dx()
+	if img.Bounds().Dy() > maxdim {
+		maxdim = img.Bounds().Dy()
+	}
+	maxdim = pow2roundup(maxdim)
+	return maxdim == img.Bounds().Dx() &&
+		maxdim == img.Bounds().Dy()
 }
