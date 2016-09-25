@@ -23,7 +23,7 @@ func pow2roundup(x int) int {
 
 // PowerOf2Image returns a power-of-2 square image, on which src is copied over
 // at the origin point {0,0}.
-
+//
 // The new image has the dimensions of the smallest square that can contain the
 // whole src image. The process creates	an image of uniform color, with pad, and
 // copies the original image. pad is converted to src color.Model so that the
