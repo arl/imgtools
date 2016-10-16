@@ -12,8 +12,13 @@ bit, and thus take a smaller memory footprint, choice has been made to
 represent `Bit` pixels as `byte` values, that can either be 0 (Black or Off) or 255
 (White or On), mostly for simplicity reasons.
 
-Binary images are created either by calling functions such as NewFromImage and
-NewBinary, or their counterparts accepting a custom binaryModel.
+Binary images are created either by calling functions such as `NewFromImage` and
+`NewBinary`, or their counterparts accepting a custom binaryModel: `NewCustomFromImage` and `NewCustomBinary`.
+
+
+![color-gopher-image](https://github.com/aurelien-rainone/binimg/blob/readme-images/colorgopher.png "Color Gopher")
+![black-and-white-gopher-image](https://github.com/aurelien-rainone/binimg/blob/readme-images/bwgopher.png "Black&White Gopher")
+![black-and-white-high-threshold-gopher-image](https://github.com/aurelien-rainone/binimg/blob/readme-images/bwgopher.high.threshold.png "High Threshold Black&White Gopher")
 
 -----------------------
 
