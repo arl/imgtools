@@ -15,6 +15,7 @@ represent `Bit` pixels as `byte` values, that can either be 0 (Black or Off) or 
 Binary images are created either by calling functions such as `NewFromImage` and
 `NewBinary`, or their counterparts accepting a custom binaryModel: `NewCustomFromImage` and `NewCustomBinary`.
 
+-----------------------
 
 **converted using the default color model: `binaryModel`**
 
@@ -27,7 +28,8 @@ Binary images are created either by calling functions such as `NewFromImage` and
 -----------------------
 
 ## Usage
-- Create and modify new binary image
+
+- **Create and modify new binary image**
 
 ```go
 package main
@@ -52,7 +54,7 @@ func main() {
 }
 ```
 
-- Convert image.Image into binimg.Binary
+- **Convert `image.Image` `into binimg.Binary`**
 
 ```go
 package main
@@ -69,7 +71,7 @@ func main() {
 }
 ```
 
-- Use a custom binary color.Model
+- **Use a custom binary `color.Model`**
 
 ```go
 package main
