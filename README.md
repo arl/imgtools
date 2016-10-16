@@ -7,13 +7,15 @@
 regions of such images. A binary image has only two possible colors for each
 pixel, generally Black and White, though any two colors can be used.
 
-Though the information represented by each pixel could be stored as a single
-bit, and thus take a smaller memory footprint, choice has been made to
-represent `Bit` pixels as `byte` values, that can either be 0 (Black or Off) or 255
-(White or On), mostly for simplicity reasons.
+Even if each pixel could be stored as a single bit, as the information it
+contains is binary (two possible values), `binimg.Bit` pixels/colors are
+represented by `byte` values, that can either be 0 (Black or Off) or 255 (White
+or On), mostly for simplicity reasons.
 
-Binary images are created either by calling functions such as `NewFromImage` and
-`NewBinary`, or their counterparts accepting a custom binaryModel: `NewCustomFromImage` and `NewCustomBinary`.
+`binimg.Binary` images are created either by calling the `NewFromImage` and
+`NewBinary` functions, using the default binary model, or their `Custom`
+counterparts `NewCustomFromImage` and `NewCustomBinary`, accepting a custom
+binaryModel.
 
 -----------------------
 
@@ -54,7 +56,7 @@ func main() {
 }
 ```
 
-- **Convert `image.Image` `into binimg.Binary`**
+- **Convert `image.Image` into `binimg.Binary`**
 
 ```go
 package main
