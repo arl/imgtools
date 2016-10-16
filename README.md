@@ -16,9 +16,13 @@ Binary images are created either by calling functions such as `NewFromImage` and
 `NewBinary`, or their counterparts accepting a custom binaryModel: `NewCustomFromImage` and `NewCustomBinary`.
 
 
-![color-gopher-image](https://github.com/aurelien-rainone/binimg/blob/readme-images/colorgopher.png "Color Gopher")
-![black-and-white-gopher-image](https://github.com/aurelien-rainone/binimg/blob/readme-images/bwgopher.png "Black&White Gopher")
-![black-and-white-high-threshold-gopher-image](https://github.com/aurelien-rainone/binimg/blob/readme-images/bwgopher.high.threshold.png "High Threshold Black&White Gopher")
+**converted using the default color model: `binaryModel`**
+
+<img src="../readme-images/colorgopher.png" width="128">  <img src="../readme-images/bwgopher.png" width="128">
+
+**converted using the high threshold color model: `BinaryModelHighThreshold`**
+
+<img src="../readme-images/colorgopher.png" width="128">  <img src="../readme-images/bwgopher.high.threshold.png" width="128">
 
 -----------------------
 
@@ -74,7 +78,7 @@ import "github.com/aurelien-rainone/binimg"
 
 func main() {
 	// use one of the predefined color models
-	model := binimg.BinaryModelLowThreshold
+	model := binimg.BinaryModelHighThreshold
 	bin := binimg.NewCustomBinary(image.Rect(0, 0, 32, 32), model)
 
 	// convert an image to black and white with a custom color model
