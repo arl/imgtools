@@ -66,6 +66,9 @@ func (b *Binary) Bounds() image.Rectangle { return b.Rect }
 // At(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the grid.
 // At(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
 func (b *Binary) At(x, y int) color.Color {
+	if !(image.Point{x, y}.In(b.Rect)) {
+		return b.Palette.OffColor
+	}
 	if b.BitAt(x, y) == Off {
 		return b.Palette.OffColor
 	}
