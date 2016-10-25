@@ -71,14 +71,14 @@ func TestPixelOperations(t *testing.T) {
 
 	// get/set pixel from color.Color
 	bin.Set(x, y, whiteRGBA)
-	bit = bin.Palette.Convert(bin.At(x, y)).(Bit)
+	bit = bin.Palette.ConvertBit(bin.At(x, y))
 	if bit != On {
 		t.Errorf("want bit at (%d,%d) to be On, got %v", x, y, bit)
 	}
 
 	// get/set pixel from color.Color
 	bin.Set(x, y, blackRGBA)
-	bit = bin.Palette.Convert(bin.At(x, y)).(Bit)
+	bit = bin.Palette.ConvertBit(bin.At(x, y))
 	if bit != Off {
 		t.Errorf("want bit at (%d,%d) to be Off, got %v", x, y, bit)
 	}
