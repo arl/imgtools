@@ -19,19 +19,14 @@ import (
 	"image/draw"
 )
 
-// Black and White are the only colors that a Binary image pixel can have.
+// On and Off are the only two values that can take a Bit.
 var (
-	Black = Bit{0}
-	White = Bit{255}
+	Off = Bit{0}
+	On  = Bit{255}
 )
 
-// Alias colors for Black and White
-var (
-	Off = Black
-	On  = White
-)
-
-// Bit represents a Black or White only binary color.
+// Bit represents a 1-bit binary color.
+// TODO: should use: type Bit byte instead
 type Bit struct {
 	v byte
 }
@@ -39,51 +34,12 @@ type Bit struct {
 // RGBA returns the red, green, blue and alpha values for a Bit color.
 //
 // alpha is always 0xffff (fully opaque) and r, g, b are all 0 or all 0xffff.
+// Note: a Bit is not mean to be directly converted to RGBA with this method,
+// but through the binary Palette of a Binary image.
 func (c Bit) RGBA() (r, g, b, a uint32) {
 	v := uint32(c.v)
 	v |= v << 8
 	return v, v, v, 0xffff
-}
-
-// Other returns a Bit with the other value.
-func (c Bit) Other() Bit {
-	if c.v == 0 {
-		return White
-	}
-	return Black
-}
-
-// Various binary models with different thresholds.
-var (
-	BinaryModelLowThreshold    = NewBinaryModel(37)
-	BinaryModelMediumThreshold = NewBinaryModel(97)
-	BinaryModelHighThreshold   = NewBinaryModel(197)
-	BinaryModel                = BinaryModelMediumThreshold
-)
-
-type binaryModel struct {
-	threshold uint8
-}
-
-func (m binaryModel) Convert(c color.Color) color.Color {
-	if _, ok := c.(Bit); ok {
-		return c
-	}
-	r, g, b, _ := c.RGBA()
-
-	y := (299*r + 587*g + 114*b + 500) / 1000
-	if uint8(y>>8) > m.threshold {
-		return White
-	}
-	return Black
-}
-
-// NewBinaryModel creates a new binaryModel that converts any color to a Bit.
-//
-// binaryModel is an opaque (as in not exported) type. The threshold is the
-// limit over which source colors are converted to White, under to Black.
-func NewBinaryModel(threshold uint8) binaryModel {
-	return binaryModel{threshold}
 }
 
 // Binary is an in-memory image whose At method returns Bit values.
@@ -95,12 +51,12 @@ type Binary struct {
 	Stride int
 	// Rect is the image's bounds.
 	Rect image.Rectangle
-
-	model binaryModel
+	// Palette is the image binary Palette
+	Palette Palette
 }
 
 // ColorModel returns the image.Image's color model.
-func (b *Binary) ColorModel() color.Model { return b.model }
+func (b *Binary) ColorModel() color.Model { return b.Palette }
 
 // Bounds returns the domain for which At can return non-zero color.
 // The bounds do not necessarily contain the point (0, 0).
@@ -110,7 +66,10 @@ func (b *Binary) Bounds() image.Rectangle { return b.Rect }
 // At(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the grid.
 // At(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
 func (b *Binary) At(x, y int) color.Color {
-	return b.BitAt(x, y)
+	if b.BitAt(x, y) == Off {
+		return b.Palette.OffColor
+	}
+	return b.Palette.OnColor
 }
 
 // BitAt returns the Bit color of the pixel at (x, y).
@@ -122,7 +81,10 @@ func (b *Binary) BitAt(x, y int) Bit {
 		return Bit{}
 	}
 	i := b.PixOffset(x, y)
-	return Bit{b.Pix[i]}
+	if b.Pix[i] == 0x0 {
+		return Off
+	}
+	return On
 }
 
 // PixOffset returns the index of the first element of Pix that corresponds to
@@ -139,7 +101,7 @@ func (b *Binary) Set(x, y int, c color.Color) {
 		return
 	}
 	i := b.PixOffset(x, y)
-	b.Pix[i] = b.model.Convert(c).(Bit).v
+	b.Pix[i] = b.Palette.ConvertBit(c).v
 }
 
 // SetBit sets the Bit of the pixel at (x, y).
@@ -189,33 +151,17 @@ func (b *Binary) Opaque() bool {
 	return true
 }
 
-// New returns a new Binary image with the given bounds.
-func New(r image.Rectangle) *Binary {
+// New returns a new Binary image with given width, height and binary palette.
+func New(r image.Rectangle, p Palette) *Binary {
 	w, h := r.Dx(), r.Dy()
 	pix := make([]uint8, 1*w*h)
-	return &Binary{pix, 1 * w, r, BinaryModel}
+	return &Binary{pix, 1 * w, r, p}
 }
 
-// NewCustomBinary returns a new Binary image with the given bounds and binary
-// model.
-func NewCustomBinary(r image.Rectangle, model binaryModel) *Binary {
-	w, h := r.Dx(), r.Dy()
-	pix := make([]uint8, 1*w*h)
-	return &Binary{pix, 1 * w, r, model}
-}
-
-// NewFromImage returns the binary image that is the conversion of the given
-// source image.
-func NewFromImage(src image.Image) *Binary {
-	dst := New(src.Bounds())
-	draw.Draw(dst, dst.Bounds(), src, image.Point{}, draw.Src)
-	return dst
-}
-
-// NewCustomFromImage returns the binary image that is the conversion of the
-// given source image with the specified binary model.
-func NewCustomFromImage(src image.Image, model binaryModel) *Binary {
-	dst := NewCustomBinary(src.Bounds(), model)
+// NewFromImage converts src image into a Binary.Image with the given binary
+// palette.
+func NewFromImage(src image.Image, p Palette) *Binary {
+	dst := New(src.Bounds(), p)
 	draw.Draw(dst, dst.Bounds(), src, image.Point{}, draw.Src)
 	return dst
 }
