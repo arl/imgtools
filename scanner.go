@@ -13,8 +13,8 @@ type Scanner interface {
 	// UniformColor reports wether all the pixels of given region are of the color c.
 	UniformColor(r image.Rectangle, c color.Color) bool
 
-	// Uniform reports wether the given region is uniform. If is the case, the
-	// uniform color bit is returned, otherwise the returned Bit is not
-	// significative (always the zero value of Bit).
-	Uniform(r image.Rectangle) (bool, color.Color)
+	// Uniform reports wether the given region is uniform. If that is the case,
+	// the returned 'uniform' bool is true and col is that uniform color. If
+	// 'uniform' is false, col nil)
+	Uniform(r image.Rectangle) (uniform bool, col color.Color)
 }
