@@ -88,110 +88,103 @@ func TestPixelOperations(t *testing.T) {
 	sub.Set(4, 4, whiteRGBA)
 }
 
-//func TestBitOperations(t *testing.T) {
-//var (
-//bin *Binary
-//bit Bit
-//err error
-//)
+func TestBitOperations(t *testing.T) {
+	var (
+		bin *Binary
+		bit Bit
+	)
 
-//// create a 10x10 Binary image
-//bin = New(image.Rect(0, 0, 10, 10))
-//x, y := 9, 9
+	// create a 10x10 Binary image
+	bin = New(image.Rect(0, 0, 10, 10), BlackAndWhite)
+	x, y := 9, 9
 
-//// get/set pixel from Bit
-//bin.SetBit(x, y, White)
-//bit = bin.BitAt(x, y)
-//if bit != White {
-//t.Errorf("expected pixel at (%d,%d) to be White, got %v", x, y, bit)
-//}
+	// get/set pixel from Bit
+	bin.SetBit(x, y, On)
+	bit = bin.BitAt(x, y)
+	if bit != On {
+		t.Errorf("expected pixel at (%d,%d) to be White, got %v", x, y, bit)
+	}
 
-//// get/set pixel from Bit
-//bin.SetBit(x, y, Black)
-//bit = bin.BitAt(x, y)
-//if bit != Black {
-//t.Errorf("expected pixel at (%d,%d) to be Black, got %v", x, y, bit)
-//}
+	// get/set pixel from Bit
+	bin.SetBit(x, y, Off)
+	bit = bin.BitAt(x, y)
+	if bit != Off {
+		t.Errorf("expected pixel at (%d,%d) to be Black, got %v", x, y, bit)
+	}
 
-//// setting a bit that is out of the image bounds should not panic, nor do nothing
-//sub := bin.SubImage(image.Rect(1, 1, 2, 2)).(*Binary)
-//scanner, err := NewScanner(bin)
-//check(t, err)
+	// setting a bit that is out of the image bounds should not panic, nor do nothing
+	sub := bin.SubImage(image.Rect(1, 1, 2, 2)).(*Binary)
+	sub.SetBit(4, 4, On)
+}
 
-//sub.SetBit(4, 4, White)
-//if !scanner.UniformColor(bin.Bounds(), Black) {
-//t.Errorf("binary was expected to be uniformely black, got not uniform")
-//}
-//}
+func TestSetEmptyRect(t *testing.T) {
+	var (
+		bin *Binary
+	)
 
-//func TestSetEmptyRect(t *testing.T) {
-//var (
-//bin *Binary
-//)
+	// create a 10x10 Binary image
+	bin = New(image.Rect(0, 0, 10, 10), BlackAndWhite)
 
-//// create a 10x10 Binary image
-//bin = New(image.Rect(0, 0, 10, 10))
+	// SetRect (empty rect)
+	bin.SetRect(image.Rect(0, 0, 0, 0), On)
 
-//// SetRect (empty rect)
-//bin.SetRect(image.Rect(0, 0, 0, 0), White)
+	// SetRect (rect which intersection is empty)
+	bin.SetRect(image.Rect(100, 100, 10, 10), Off)
+}
 
-//// SetRect (rect which intersection is empty)
-//bin.SetRect(image.Rect(100, 100, 10, 10), Black)
-//}
+func TestSetRect(t *testing.T) {
+	var (
+		bin *Binary
+		bit Bit
+	)
 
-//func TestSetRect(t *testing.T) {
-//var (
-//bin *Binary
-//bit Bit
-//)
+	// create a 10x10 Binary image
+	bin = New(image.Rect(0, 0, 10, 10), BlackAndWhite)
 
-//// create a 10x10 Binary image
-//bin = New(image.Rect(0, 0, 10, 10))
+	// SetRect
+	bin.SetRect(image.Rect(0, 0, 1, 1), On)
 
-//// SetRect
-//bin.SetRect(image.Rect(0, 0, 1, 1), White)
+	var testTbl = []struct {
+		x, y int // x, y coordinates
+		bit  Bit // expected color at specified coordinates
+	}{
+		{0, 0, On},
+		{1, 0, Off},
+		{0, 1, Off},
+	}
 
-//var testTbl = []struct {
-//x, y int // x, y coordinates
-//bit  Bit // expected color at specified coordinates
-//}{
-//{0, 0, White},
-//{1, 0, Black},
-//{0, 1, Black},
-//}
+	for _, tt := range testTbl {
+		bit = bin.BitAt(tt.x, tt.y)
+		if bit != tt.bit {
+			t.Errorf("expected pixel at (%d,%d) to be %s, got %v", tt.x, tt.y, tt.bit, bit)
+		}
+	}
+}
 
-//for _, tt := range testTbl {
-//bit = bin.BitAt(tt.x, tt.y)
-//if bit != tt.bit {
-//t.Errorf("expected pixel at (%d,%d) to be %s, got %v", tt.x, tt.y, tt.bit, bit)
-//}
-//}
-//}
+func TestSetOutOfBoundsRect(t *testing.T) {
+	var (
+		bin *Binary
+		bit Bit
+	)
 
-//func TestSetOutOfBoundsRect(t *testing.T) {
-//var (
-//bin *Binary
-//bit Bit
-//)
+	// create a 10x10 Binary image
+	bin = New(image.Rect(0, 0, 10, 10), BlackAndWhite)
 
-//// create a 10x10 Binary image
-//bin = New(image.Rect(0, 0, 10, 10))
+	// setting a rect that goes out of the image bounds should not panic
+	bin.SetRect(image.Rect(8, 8, 12, 12), On)
 
-//// setting a rect that goes out of the image bounds should not panic
-//bin.SetRect(image.Rect(8, 8, 12, 12), White)
+	var testTbl = []struct {
+		x, y int // x, y coordinates
+		bit  Bit // expected color at specified coordinates
+	}{
+		{8, 8, On},
+		{9, 9, On},
+	}
 
-//var testTbl = []struct {
-//x, y int // x, y coordinates
-//bit  Bit // expected color at specified coordinates
-//}{
-//{8, 8, White},
-//{9, 9, White},
-//}
-
-//for _, tt := range testTbl {
-//bit = bin.BitAt(tt.x, tt.y)
-//if bit != tt.bit {
-//t.Errorf("expected pixel at (%d,%d) to be %s, got %v", tt.x, tt.y, tt.bit, bit)
-//}
-//}
-//}
+	for _, tt := range testTbl {
+		bit = bin.BitAt(tt.x, tt.y)
+		if bit != tt.bit {
+			t.Errorf("expected pixel at (%d,%d) to be %s, got %v", tt.x, tt.y, tt.bit, bit)
+		}
+	}
+}
