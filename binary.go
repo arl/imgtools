@@ -76,9 +76,8 @@ func (b *Binary) At(x, y int) color.Color {
 }
 
 // BitAt returns the Bit color of the pixel at (x, y).
-// BitAt(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the
-// grid. BitAt(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right
-// one.
+// BitAt(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the grid.
+// BitAt(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
 func (b *Binary) BitAt(x, y int) Bit {
 	if !(image.Point{x, y}.In(b.Rect)) {
 		return Bit{}
