@@ -24,7 +24,7 @@ func NewScanner(img image.Image) (Scanner, error) {
 	// be easy to write if there was an efficient function in the Go
 	// standard bytes package that was similar to the C++
 	// std::find_first_not_of function (i.e returns the index of the first
-	// byte of a slice that different from a given byte, or a set of bytes)
+	// byte of a slice that iis different from a given byte, or a set of bytes)
 	return nil, fmt.Errorf("unsupported image type")
 }
 
