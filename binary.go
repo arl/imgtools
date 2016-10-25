@@ -142,9 +142,10 @@ func (b *Binary) SubImage(r image.Rectangle) image.Image {
 	}
 	i := b.PixOffset(r.Min.X, r.Min.Y)
 	return &Binary{
-		Pix:    b.Pix[i:],
-		Stride: b.Stride,
-		Rect:   r,
+		Pix:     b.Pix[i:],
+		Stride:  b.Stride,
+		Rect:    r,
+		Palette: b.Palette,
 	}
 }
 
