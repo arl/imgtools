@@ -32,8 +32,8 @@ type Bit struct {
 }
 
 // Other returns On for Off, and Off for On.
-func (c Bit) Other() Bit {
-	if c == On {
+func (bit Bit) Other() Bit {
+	if bit == On {
 		return Off
 	}
 	return On
@@ -44,8 +44,8 @@ func (c Bit) Other() Bit {
 // alpha is always 0xffff (fully opaque) and r, g, b are all 0 or all 0xffff.
 // Note: a Bit is not mean to be directly converted to RGBA with this method,
 // but through the binary Palette of a Binary image.
-func (c Bit) RGBA() (r, g, b, a uint32) {
-	v := uint32(c.v)
+func (bit Bit) RGBA() (r, g, b, a uint32) {
+	v := uint32(bit.v)
 	v |= v << 8
 	return v, v, v, 0xffff
 }
