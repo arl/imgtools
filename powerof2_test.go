@@ -1,9 +1,11 @@
-package binimg
+package imgtools
 
 import (
 	"image"
 	"image/color"
 	"testing"
+
+	"github.com/aurelien-rainone/image/internal/test"
 )
 
 func assertEqual(t *testing.T, a, b int) {
@@ -28,7 +30,7 @@ func TestPowerOf2Image(t *testing.T) {
 		src, dst image.Image
 		err      error
 	)
-	src, err = loadPNG("./testdata/colorgopher.png")
+	src, err = test.loadPNG("./testdata/colorgopher.png")
 	check(t, err)
 
 	pad := color.RGBA{255, 0, 0, 255}
@@ -49,7 +51,7 @@ func TestAlreadyPowerOf2Image(t *testing.T) {
 		src, dst image.Image
 		err      error
 	)
-	src, err = loadPNG("./testdata/bwgopher.bottom-left.png")
+	src, err = test.loadPNG("./testdata/bwgopher.bottom-left.png")
 	check(t, err)
 
 	pad := color.RGBA{255, 0, 0, 255}

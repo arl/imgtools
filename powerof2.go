@@ -1,4 +1,4 @@
-package binimg
+package imgtools
 
 import (
 	"image"
