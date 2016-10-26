@@ -6,6 +6,25 @@ import (
 	"testing"
 )
 
+func newBinaryFromString(ss []string) *Binary {
+	w, h := len(ss[0]), len(ss)
+	for i := range ss {
+		if len(ss[i]) != w {
+			panic("all strings should have the same length")
+		}
+	}
+
+	bin := New(image.Rect(0, 0, w, h), BlackAndWhite)
+	for y := range ss {
+		for x := range ss[y] {
+			if ss[y][x] == '1' {
+				bin.SetBit(x, y, On)
+			}
+		}
+	}
+	return bin
+}
+
 func testIsWhite(t *testing.T, newScanner func(image.Image) Scanner) {
 	ss := []string{
 		"000",
