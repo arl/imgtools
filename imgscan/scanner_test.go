@@ -1,12 +1,15 @@
-package binimg
+package imgscan
 
 import (
 	"image"
 	"image/color"
 	"testing"
+
+	"github.com/aurelien-rainone/imgtools/binimg"
+	"github.com/aurelien-rainone/imgtools/internal/test"
 )
 
-func newBinaryFromString(ss []string) *Binary {
+func newBinaryFromString(ss []string) *binimg.Binary {
 	w, h := len(ss[0]), len(ss)
 	for i := range ss {
 		if len(ss[i]) != w {
@@ -14,11 +17,11 @@ func newBinaryFromString(ss []string) *Binary {
 		}
 	}
 
-	bin := New(image.Rect(0, 0, w, h), BlackAndWhite)
+	bin := binimg.New(image.Rect(0, 0, w, h), binimg.BlackAndWhite)
 	for y := range ss {
 		for x := range ss[y] {
 			if ss[y][x] == '1' {
-				bin.SetBit(x, y, On)
+				bin.SetBit(x, y, binimg.On)
 			}
 		}
 	}
@@ -122,7 +125,7 @@ func TestLinesScannerIsWhite(t *testing.T) {
 	testIsWhite(t,
 		func(img image.Image) Scanner {
 			s, err := NewScanner(img)
-			check(t, err)
+			test.Check(t, err)
 			return s
 		},
 	)
@@ -132,7 +135,7 @@ func TestLinesScannerIsBlack(t *testing.T) {
 	testIsBlack(t,
 		func(img image.Image) Scanner {
 			s, err := NewScanner(img)
-			check(t, err)
+			test.Check(t, err)
 			return s
 		},
 	)
@@ -142,17 +145,17 @@ func TestLinesScannerIsUniform(t *testing.T) {
 	testIsUniform(t,
 		func(img image.Image) Scanner {
 			s, err := NewScanner(img)
-			check(t, err)
+			test.Check(t, err)
 			return s
 		},
 	)
 }
 
 func benchmarkScanner(b *testing.B, pngfile string, newScanner func(image.Image) Scanner) {
-	img, err := loadPNG(pngfile)
-	checkB(b, err)
+	img, err := test.LoadPNG(pngfile)
+	test.CheckB(b, err)
 
-	scanner := newScanner(NewFromImage(img, BlackAndWhite))
+	scanner := newScanner(binimg.NewFromImage(img, binimg.BlackAndWhite))
 
 	// run N times
 	b.ResetTimer()
@@ -167,7 +170,7 @@ func BenchmarkLinesScanner(b *testing.B) {
 	benchmarkScanner(b, "./testdata/big.png",
 		func(img image.Image) Scanner {
 			s, err := NewScanner(img)
-			checkB(b, err)
+			test.CheckB(b, err)
 			return s
 		})
 }

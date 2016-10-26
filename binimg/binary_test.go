@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/aurelien-rainone/image/internal/test"
+	"github.com/aurelien-rainone/imgtools/internal/test"
 )
 
 func TestConvertImagePalette(t *testing.T) {

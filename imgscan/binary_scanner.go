@@ -1,10 +1,12 @@
-package binimg
+package imgscan
 
 import (
 	"bytes"
 	"fmt"
 	"image"
 	"image/color"
+
+	"github.com/aurelien-rainone/imgtools/binimg"
 )
 
 // NewScanner returns a new Scanner of the given image.Image.
@@ -13,7 +15,7 @@ import (
 // availability of an implementation.
 func NewScanner(img image.Image) (Scanner, error) {
 	switch impl := img.(type) {
-	case *Binary:
+	case *binimg.Binary:
 		return &binaryScanner{impl}, nil
 	case *image.Alpha:
 	case *image.Gray:
@@ -29,15 +31,16 @@ func NewScanner(img image.Image) (Scanner, error) {
 }
 
 type binaryScanner struct {
-	*Binary
+	*binimg.Binary
 }
 
 // UniformColor reports wether all the pixels of given region are of the color c.
 func (s *binaryScanner) UniformColor(r image.Rectangle, c color.Color) bool {
 	// we want the other color for bytes.IndexBytes
-	var other Bit
+	// Bit zero value is Off
+	var other binimg.Bit
 	if s.Palette.OffColor == c {
-		other = On
+		other = binimg.On
 	}
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {

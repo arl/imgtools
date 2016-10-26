@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/aurelien-rainone/image/internal/test"
+	"github.com/aurelien-rainone/imgtools/internal/test"
 )
 
 func assertEqual(t *testing.T, a, b int) {
