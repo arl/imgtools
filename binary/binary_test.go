@@ -4,27 +4,29 @@ import (
 	"image"
 	"image/color"
 	"testing"
+
+	"github.com/aurelien-rainone/image/internal/test"
 )
 
 func TestConvertImagePalette(t *testing.T) {
-	src, err := loadPNG("./testdata/colorgopher.png")
-	check(t, err)
+	src, err := test.LoadPNG("../testdata/colorgopher.png")
+	test.Check(t, err)
 	var testTbl = []struct {
 		p   Palette // the palette to use
 		ref string  // reference file
 	}{
-		{BlackAndWhite, "./testdata/bwgopher.png"},
-		{BlackAndWhiteLowThreshold, "./testdata/bwgopher.low.threshold.png"},
-		{BlackAndWhiteHighThreshold, "./testdata/bwgopher.high.threshold.png"},
-		{Palette{97, color.RGBA{255, 0, 0, 255}, color.RGBA{0, 0, 255, 255}}, "./testdata/redblue.gopher.png"},
+		{BlackAndWhite, "../testdata/bwgopher.png"},
+		{BlackAndWhiteLowThreshold, "../testdata/bwgopher.low.threshold.png"},
+		{BlackAndWhiteHighThreshold, "../testdata/bwgopher.high.threshold.png"},
+		{Palette{97, color.RGBA{255, 0, 0, 255}, color.RGBA{0, 0, 255, 255}}, "../testdata/redblue.gopher.png"},
 	}
 
 	for _, tt := range testTbl {
 		dst := NewFromImage(src, tt.p)
-		ref, err := loadPNG(tt.ref)
-		check(t, err)
+		ref, err := test.LoadPNG(tt.ref)
+		test.Check(t, err)
 
-		err = diff(ref, dst)
+		err = test.Diff(ref, dst)
 		if err != nil {
 			t.Errorf("converted image is different from %s: %v", tt.ref, err)
 		}
@@ -32,8 +34,8 @@ func TestConvertImagePalette(t *testing.T) {
 }
 
 func TestIsOpaque(t *testing.T) {
-	src, err := loadPNG("./testdata/colorgopher.png")
-	check(t, err)
+	src, err := test.LoadPNG("../testdata/colorgopher.png")
+	test.Check(t, err)
 
 	bin := NewFromImage(src, BlackAndWhite)
 	if bin.Opaque() != true {
@@ -42,15 +44,15 @@ func TestIsOpaque(t *testing.T) {
 }
 
 func TestSubImage(t *testing.T) {
-	src, err := loadPNG("./testdata/colorgopher.png")
-	check(t, err)
+	src, err := test.LoadPNG("../testdata/colorgopher.png")
+	test.Check(t, err)
 
 	sub := NewFromImage(src, BlackAndWhite).SubImage(image.Rect(352, 352, 480, 480))
-	refname := "./testdata/bwgopher.bottom-left.png"
-	ref, err := loadPNG(refname)
-	check(t, err)
+	refname := "../testdata/bwgopher.bottom-left.png"
+	ref, err := test.LoadPNG(refname)
+	test.Check(t, err)
 
-	err = diff(ref, sub)
+	err = test.Diff(ref, sub)
 	if err != nil {
 		t.Errorf("converted image is different from %s: %v", refname, err)
 	}
