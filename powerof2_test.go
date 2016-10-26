@@ -30,8 +30,8 @@ func TestPowerOf2Image(t *testing.T) {
 		src, dst image.Image
 		err      error
 	)
-	src, err = test.loadPNG("./testdata/colorgopher.png")
-	check(t, err)
+	src, err = test.LoadPNG("./testdata/colorgopher.png")
+	test.Check(t, err)
 
 	pad := color.RGBA{255, 0, 0, 255}
 	dst = PowerOf2Image(src, pad)
@@ -51,8 +51,8 @@ func TestAlreadyPowerOf2Image(t *testing.T) {
 		src, dst image.Image
 		err      error
 	)
-	src, err = test.loadPNG("./testdata/bwgopher.bottom-left.png")
-	check(t, err)
+	src, err = test.LoadPNG("./testdata/bwgopher.bottom-left.png")
+	test.Check(t, err)
 
 	pad := color.RGBA{255, 0, 0, 255}
 	dst = PowerOf2Image(src, pad)
