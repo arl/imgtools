@@ -81,11 +81,11 @@ func newBinaryFromString(ss []string) *Binary {
 		}
 	}
 
-	bin := New(image.Rect(0, 0, w, h))
+	bin := New(image.Rect(0, 0, w, h), BlackAndWhite)
 	for y := range ss {
 		for x := range ss[y] {
 			if ss[y][x] == '1' {
-				bin.SetBit(x, y, White)
+				bin.SetBit(x, y, On)
 			}
 		}
 	}

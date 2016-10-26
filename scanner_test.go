@@ -2,6 +2,7 @@ package binimg
 
 import (
 	"image"
+	"image/color"
 	"testing"
 )
 
@@ -28,7 +29,7 @@ func testIsWhite(t *testing.T, newScanner func(image.Image) Scanner) {
 
 	scanner := newScanner(newBinaryFromString(ss))
 	for _, tt := range testTbl {
-		actual := scanner.UniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), White)
+		actual := scanner.UniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), color.White)
 		if actual != tt.expected {
 			t.Errorf("%d,%d|%d,%d): expected %v, actual %v", tt.minx, tt.miny, tt.maxx, tt.maxy, tt.expected, actual)
 		}
@@ -58,7 +59,7 @@ func testIsBlack(t *testing.T, newScanner func(image.Image) Scanner) {
 
 	scanner := newScanner(newBinaryFromString(ss))
 	for _, tt := range testTbl {
-		actual := scanner.UniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), Black)
+		actual := scanner.UniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), color.Black)
 		if actual != tt.expected {
 			t.Errorf("(%d,%d|%d,%d): expected %v, actual %v", tt.minx, tt.miny, tt.maxx, tt.maxy, tt.expected, actual)
 		}
@@ -74,16 +75,16 @@ func testIsUniform(t *testing.T, newScanner func(image.Image) Scanner) {
 	var testTbl = []struct {
 		minx, miny, maxx, maxy int
 		expected               bool
-		expectedColor          Bit
+		expectedColor          color.Color
 	}{
-		{0, 0, 3, 3, false, Bit{}},
-		{1, 1, 3, 3, false, Bit{}},
-		{0, 1, 1, 2, true, Black},
-		{0, 0, 1, 1, true, White},
-		{1, 0, 2, 1, true, White},
-		{1, 0, 3, 2, true, White},
-		{1, 2, 3, 3, true, Black},
-		{2, 2, 3, 3, true, Black},
+		{0, 0, 3, 3, false, nil},
+		{1, 1, 3, 3, false, nil},
+		{0, 1, 1, 2, true, color.Black},
+		{0, 0, 1, 1, true, color.White},
+		{1, 0, 2, 1, true, color.White},
+		{1, 0, 3, 2, true, color.White},
+		{1, 2, 3, 3, true, color.Black},
+		{2, 2, 3, 3, true, color.Black},
 	}
 
 	scanner := newScanner(newBinaryFromString(ss))
@@ -132,13 +133,13 @@ func benchmarkScanner(b *testing.B, pngfile string, newScanner func(image.Image)
 	img, err := loadPNG(pngfile)
 	checkB(b, err)
 
-	scanner := newScanner(NewFromImage(img))
+	scanner := newScanner(NewFromImage(img, BlackAndWhite))
 
 	// run N times
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		scanner.UniformColor(img.Bounds(), White)
-		scanner.UniformColor(img.Bounds(), Black)
+		scanner.UniformColor(img.Bounds(), color.White)
+		scanner.UniformColor(img.Bounds(), color.Black)
 		scanner.Uniform(img.Bounds())
 	}
 }
