@@ -156,7 +156,7 @@ func TestSetRect(t *testing.T) {
 	for _, tt := range testTbl {
 		bit = bin.BitAt(tt.x, tt.y)
 		if bit != tt.bit {
-			t.Errorf("expected pixel at (%d,%d) to be %s, got %v", tt.x, tt.y, tt.bit, bit)
+			t.Errorf("expected pixel at (%d,%d) to be %v, got %v", tt.x, tt.y, tt.bit, bit)
 		}
 	}
 }
@@ -184,7 +184,7 @@ func TestSetOutOfBoundsRect(t *testing.T) {
 	for _, tt := range testTbl {
 		bit = bin.BitAt(tt.x, tt.y)
 		if bit != tt.bit {
-			t.Errorf("expected pixel at (%d,%d) to be %s, got %v", tt.x, tt.y, tt.bit, bit)
+			t.Errorf("expected pixel at (%d,%d) to be %v, got %v", tt.x, tt.y, tt.bit, bit)
 		}
 	}
 }
