@@ -24,7 +24,7 @@ func NewScanner(img image.Image) (Scanner, error) {
 	// be easy to write if there was an efficient function in the Go
 	// standard bytes package that was similar to the C++
 	// std::find_first_not_of function (i.e returns the index of the first
-	// byte of a slice that iis different from a given byte, or a set of bytes)
+	// byte of a slice that is different from a given byte, or a set of bytes)
 	return nil, fmt.Errorf("unsupported image type")
 }
 
@@ -35,12 +35,16 @@ type binaryScanner struct {
 // UniformColor reports wether all the pixels of given region are of the color c.
 func (s *binaryScanner) UniformColor(r image.Rectangle, c color.Color) bool {
 	// we want the other color for bytes.IndexBytes
-	other := c.(Bit).Other().v
+	var other byte
+	if s.Palette.OffColor == c {
+		other = On.v
+	}
+
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		i := s.PixOffset(r.Min.X, y)
 		j := s.PixOffset(r.Max.X, y)
-		// look for the first pixel that is not c
 		if bytes.IndexByte(s.Pix[i:j], other) != -1 {
+			// quit at the first byte that is not 'other'
 			return false
 		}
 	}
@@ -51,12 +55,12 @@ func (s *binaryScanner) UniformColor(r image.Rectangle, c color.Color) bool {
 // uniform color bit is returned, otherwise the returned Bit is not
 // significative (always the zero value of Bit).
 func (s *binaryScanner) Uniform(r image.Rectangle) (bool, color.Color) {
-	// bit color of the first pixel (top-left)
-	first := s.BitAt(r.Min.X, r.Min.Y)
+	// color of the first pixel (top-left)
+	first := s.At(r.Min.X, r.Min.Y)
 
 	// check if all the pixels of the region are of this color.
 	if s.UniformColor(r, first) {
 		return true, first
 	}
-	return false, Bit{}
+	return false, nil
 }
