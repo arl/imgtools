@@ -38,7 +38,7 @@ func (p Palette) Convert(c color.Color) color.Color {
 // palette Threshold.
 func (p Palette) ConvertBit(c color.Color) Bit {
 	if bit, ok := c.(Bit); ok {
-		if bit.v == 0 {
+		if bit == On {
 			return Off
 		}
 		return On

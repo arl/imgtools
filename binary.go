@@ -19,17 +19,15 @@ import (
 	"image/draw"
 )
 
-// On and Off are the only two values that can take a Bit.
-var (
-	Off = Bit{0}
-	On  = Bit{255}
-)
-
 // Bit represents a 1-bit binary color.
-// TODO: should use: type Bit byte instead
-type Bit struct {
-	v byte
-}
+type Bit uint8
+
+// On and Off are the only two values that can take a Bit.
+//go:generate stringer -type=Bit
+var (
+	Off = Bit(0)
+	On  = Bit(255)
+)
 
 // Other returns On for Off, and Off for On.
 func (bit Bit) Other() Bit {
@@ -45,7 +43,7 @@ func (bit Bit) Other() Bit {
 // Note: a Bit is not mean to be directly converted to RGBA with this method,
 // but through the binary Palette of a Binary image.
 func (bit Bit) RGBA() (r, g, b, a uint32) {
-	v := uint32(bit.v)
+	v := uint32(bit)
 	v |= v << 8
 	return v, v, v, 0xffff
 }
@@ -88,7 +86,7 @@ func (b *Binary) At(x, y int) color.Color {
 // BitAt(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
 func (b *Binary) BitAt(x, y int) Bit {
 	if !(image.Point{x, y}.In(b.Rect)) {
-		return Bit{}
+		return Off
 	}
 	i := b.PixOffset(x, y)
 	if b.Pix[i] == 0x0 {
@@ -111,7 +109,7 @@ func (b *Binary) Set(x, y int, c color.Color) {
 		return
 	}
 	i := b.PixOffset(x, y)
-	b.Pix[i] = b.Palette.ConvertBit(c).v
+	b.Pix[i] = uint8(b.Palette.ConvertBit(c))
 }
 
 // SetBit sets the Bit of the pixel at (x, y).
@@ -120,7 +118,7 @@ func (b *Binary) SetBit(x, y int, c Bit) {
 		return
 	}
 	i := b.PixOffset(x, y)
-	b.Pix[i] = c.v
+	b.Pix[i] = uint8(c)
 }
 
 // SetRect sets all the pixels in the rectangle defined by given rectangle.
@@ -132,7 +130,7 @@ func (b *Binary) SetRect(r image.Rectangle, c Bit) {
 			j := b.PixOffset(r.Max.X, y)
 			// loop on all pixels (bytes) of this horizontal line
 			for x := i; x < j; x++ {
-				b.Pix[x] = c.v
+				b.Pix[x] = uint8(c)
 			}
 		}
 	}

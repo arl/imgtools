@@ -35,15 +35,15 @@ type binaryScanner struct {
 // UniformColor reports wether all the pixels of given region are of the color c.
 func (s *binaryScanner) UniformColor(r image.Rectangle, c color.Color) bool {
 	// we want the other color for bytes.IndexBytes
-	var other byte
+	var other Bit
 	if s.Palette.OffColor == c {
-		other = On.v
+		other = On
 	}
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		i := s.PixOffset(r.Min.X, y)
 		j := s.PixOffset(r.Max.X, y)
-		if bytes.IndexByte(s.Pix[i:j], other) != -1 {
+		if bytes.IndexByte(s.Pix[i:j], byte(other)) != -1 {
 			// quit at the first byte that is not 'other'
 			return false
 		}
