@@ -1,4 +1,4 @@
-package binimg
+package test
 
 import (
 	"fmt"
