@@ -29,14 +29,6 @@ var (
 	On  = Bit(255)
 )
 
-// Other returns On for Off, and Off for On.
-func (bit Bit) Other() Bit {
-	if bit == On {
-		return Off
-	}
-	return On
-}
-
 // RGBA returns the red, green, blue and alpha values for a Bit color.
 //
 // alpha is always 0xffff (fully opaque) and r, g, b are all 0 or all 0xffff.
