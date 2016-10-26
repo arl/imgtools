@@ -31,6 +31,14 @@ type Bit struct {
 	v byte
 }
 
+// Other returns On for Off, and Off for On.
+func (c Bit) Other() Bit {
+	if c == On {
+		return Off
+	}
+	return On
+}
+
 // RGBA returns the red, green, blue and alpha values for a Bit color.
 //
 // alpha is always 0xffff (fully opaque) and r, g, b are all 0 or all 0xffff.
