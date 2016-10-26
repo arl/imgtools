@@ -2,7 +2,7 @@ package binimg
 
 import "image/color"
 
-// predefined binary palette
+// predefined binary palettes
 var (
 	BlackAndWhiteLowThreshold    = Palette{37, color.Black, color.White}
 	BlackAndWhiteMediumThreshold = Palette{97, color.Black, color.White}
