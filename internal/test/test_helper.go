@@ -1,4 +1,4 @@
-package binimg
+package test
 
 import (
 	"fmt"
@@ -8,19 +8,19 @@ import (
 	"testing"
 )
 
-func check(t *testing.T, err error) {
+func Check(t *testing.T, err error) {
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func checkB(b *testing.B, err error) {
+func CheckB(b *testing.B, err error) {
 	if err != nil {
 		b.Fatal(err)
 	}
 }
 
-func loadPNG(filename string) (image.Image, error) {
+func LoadPNG(filename string) (image.Image, error) {
 	var (
 		img image.Image
 	)
@@ -38,7 +38,7 @@ func loadPNG(filename string) (image.Image, error) {
 	return img, nil
 }
 
-func savePNG(img image.Image, filename string) error {
+func SavePNG(img image.Image, filename string) error {
 	out, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func savePNG(img image.Image, filename string) error {
 	return nil
 }
 
-func diff(m0, m1 image.Image) error {
+func Diff(m0, m1 image.Image) error {
 	b0, b1 := m0.Bounds(), m1.Bounds()
 	if !b0.Size().Eq(b1.Size()) {
 		return fmt.Errorf("dimensions differ: %v vs %v", b0, b1)
@@ -71,23 +71,4 @@ func diff(m0, m1 image.Image) error {
 		}
 	}
 	return nil
-}
-
-func newBinaryFromString(ss []string) *Binary {
-	w, h := len(ss[0]), len(ss)
-	for i := range ss {
-		if len(ss[i]) != w {
-			panic("all strings should have the same length")
-		}
-	}
-
-	bin := New(image.Rect(0, 0, w, h), BlackAndWhite)
-	for y := range ss {
-		for x := range ss[y] {
-			if ss[y][x] == '1' {
-				bin.SetBit(x, y, On)
-			}
-		}
-	}
-	return bin
 }
