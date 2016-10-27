@@ -26,15 +26,15 @@ func NewFromImage(src image.Image, p Palette) *Binary
 
 -----------------------
 
-**converted using the `BlackAndWhite` predefined `Palette`**
+**`BlackAndWhite` predefined `Palette`**
 
 <img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/colorgopher.png" width="128">  <img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/bwgopher.png" width="128">
 
-**converted using the `BlackAndWhiteHighThreshold` predefined `Palette`**
+**`BlackAndWhiteHighThreshold` predefined `Palette`**
 
 <img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/colorgopher.png" width="128">  <img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/bwgopher.high.threshold.png" width="128">
 
-**converted using a custom `Palette`**
+**Custom `Palette`**
 
 <img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/colorgopher.png" width="128">  <img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/redblue.gopher.png" width="128">
 
