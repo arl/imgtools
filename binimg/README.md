@@ -1,32 +1,42 @@
-# binimg
+[![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/aurelien-rainone/imgtools)
 
-`binimg` package proposes an in-memory binary image format, implementing the
-`image.Image` interface. A binary image has only two possible colors for each
-pixel, generally Black and White, though any two colors can be used.
-
-A pixel could be stored as a single bit, but as the main goal for this package
-is time-efficient manipulation of binary images, `binimg.Binary` uses `byte` as
-the underlying data type for pixels.
-
-`binimg.Binary` images are created by calling either: 
-
-- `binimg.New()`, that creates an image of the given dimensions, filled with
-`binimg.OffColor`, and providing a `binimg.Palette` or using a predefined one.
-- `binimg.NewFromImage`, that takes any `image.Image` and converts it to a
-`Binary`, by using the provided `binimg.Palette`.
+# binimg - Binary images in Go
 
 
-## TODO: continue here...
+`binimg`package proposes an in-memory *binary image format*, that is an image
+that has only two possible values for each pixel. Typically, the two colors
+used for a binary image are black and white, though any two colors can be used.
+Such images are also referred to as *bi-level*, or *two-level*.
+
+`Binary` implements the standard Go `image.Image`and `draw.Image` interfaces
+and embeds a two colors palette of type `Palette`, that itself implements the
+`color.Model` interface. `Palette` allows any `color.Color` to be converted to
+`OffColor` or `OnColor`.
+
+A pixel could be stored as a single bit, but as the main goal of this package
+is fast manipulation of binary images, `Bit`, the underlying pixel data
+type manipulated by `Binary` image, is 1 `byte` wide.
+
+`Binary` are instantiated by the following functions:
+
+```go
+func New(r image.Rectangle, p Palette) *Binary
+func NewFromImage(src image.Image, p Palette) *Binary
+```
 
 -----------------------
 
-**converted using the default color model: `binaryModel`**
+**converted using the `BlackAndWhite` predefined `Palette`**
 
-<img src="../readme-images/colorgopher.png" width="128">  <img src="../readme-images/bwgopher.png" width="128">
+<img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/colorgopher.png" width="128">  <img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/bwgopher.png" width="128">
 
-**converted using the high threshold color model: `BinaryModelHighThreshold`**
+**converted using the `BlackAndWhiteHighThreshold` predefined `Palette`**
 
-<img src="../readme-images/colorgopher.png" width="128">  <img src="../readme-images/bwgopher.high.threshold.png" width="128">
+<img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/colorgopher.png" width="128">  <img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/bwgopher.high.threshold.png" width="128">
+
+**converted using a custom `Palette`**
+
+<img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/colorgopher.png" width="128">  <img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/redblue.gopher.high.threshold.png" width="128">
 
 -----------------------
 
@@ -39,25 +49,27 @@ package main
 
 import (
 	"image"
-	"github.com/aurelien-rainone/binimg"
+	"image/color"
+
+	"github.com/aurelien-rainone/imgtools/binimg"
 )
 
 func main() {
-	// create a new image (black)
-	bin := binimg.New(image.Rect(0,0, 128, 128))
+	// create a new image (prefilled with OffColor: black)
+	bin := binimg.New(image.Rect(0, 0, 128, 128), binimg.BlackAndWhite)
 
-	// set a pixel to White
-	bin.SetBit(10, 0, White)
+	// set a pixel to OnColor: White
+	bin.SetBit(10, 0, binimg.On)
 
-	// set a pixel, converting original color using the binaryModel
-	bin.Set(10, 0, color.RGBA(127, 23, 798, 255))
+	// set a pixel, converting original color with BlackAndWhite Palette
+	bin.Set(10, 0, color.RGBA{127, 23, 98, 255})
 
 	// set rectangular region to White
-	bin.SetRect(image.Rect(32, 32, 64, 64), White)
+	bin.SetRect(image.Rect(32, 32, 64, 64), binimg.On)
 }
 ```
 
-- **Convert `image.Image` into `binimg.Binary`**
+- **Convert an existing `image.Image` into black and white binary image**
 
 ```go
 package main
@@ -74,20 +86,29 @@ func main() {
 }
 ```
 
-- **Use a custom binary `color.Model`**
+- **Use a custom `binimg.Palette` (i.e `color.Model`)**
 
 ```go
-package main
+import (
+	"image"
+	"image/color"
 
-import "github.com/aurelien-rainone/binimg"
+	"github.com/aurelien-rainone/imgtools/binimg"
+)
 
 func main() {
-	// use one of the predefined color models
-	model := binimg.BinaryModelHighThreshold
-	bin := binimg.NewCustomBinary(image.Rect(0, 0, 32, 32), model)
+	var img image.Image
 
-	// convert an image to black and white with a custom color model
-	mymodel := binimg.NewBinaryModel(214)
-	bin := binimg.NewCustomFromImage(myimg, mymodel)
+	// ... decode image
+
+	// create
+	palette := binimg.Palette{
+		OnColor:   color.RGBA{255, 0, 0, 255},
+		OffColor:  color.RGBA{0, 0, 255, 255},
+		Threshold: 97,
+	}
+	bin := binimg.NewFromImage(img, palette)
+
+	// ... encode image
 }
 ```
