@@ -4,13 +4,9 @@
 
 
 `imgtools` package contains some utilities for working with 2D images in Go,
-that complete the standard Go `image` package.
+completing the standard Go `image` package.
 
-- `imgtools/binimg`: a binary image format, that is an image that has only two
-possible values for each pixel. Typically, the two colors used for a binary
-image are black and white, though any two colors can be used. Such images are
-also referred to as *bi-level*, or *two-level*. Each pixel is stored as a
-single bit, 0 represents the OffColor and 1 the OnColor in the two colors
-Palette contained in the image.
+- [`imgtools/binimg`](./imgtools/binimg) : binary image implementation of the `image.Image`
+interface. that is an image that has only two possible values for each pixel.
 
-- `imgscan` sub-package
+- [`imgtools/imgscan`](./imgtools/imgscan) : fast scanning of rectangular regions of `image.Image`.
