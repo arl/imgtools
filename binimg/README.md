@@ -3,12 +3,12 @@
 # binimg - Binary images in Go
 
 
-`binimg`package proposes an in-memory *binary image format*, that is an image
+`binimg` package proposes an in-memory *binary image format*, that is an image
 that has only two possible values for each pixel. Typically, the two colors
 used for a binary image are black and white, though any two colors can be used.
 Such images are also referred to as *bi-level*, or *two-level*.
 
-`Binary` implements the standard Go `image.Image`and `draw.Image` interfaces
+`Binary` implements the standard Go `image.Image` and `draw.Image` interfaces
 and embeds a two colors palette of type `Palette`, that itself implements the
 `color.Model` interface. `Palette` allows any `color.Color` to be converted to
 `OffColor` or `OnColor`.

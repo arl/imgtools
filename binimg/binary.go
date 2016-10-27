@@ -1,16 +1,24 @@
-// Package binimg proposes an in-memory binary image format, implementing the
-// image.Image interface, alongside a set of efficient tools to scan
-// rectangular regions of such images. A binary image has only two possible
-// colors for each pixel, generally Black and White, though any two colors can
-// be used.
+// Package binimg proposes an in-memory binary image format, that is an image
+// that has only two possible values for each pixel. Typically, the two colors
+// used for a binary image are black and white, though any two colors can be
+// used. Such images are also referred to as "bi-level", or "two-level".
 //
-// Though the information represented by each pixel could be stored as a single
-// bit, and thus take a smaller memory footprint, choice has been made to
-// represent Bit pixels as byte values, that can either be 0 (Black or Off) or
-// 255 (White or On), mostly for simplicity reasons.
+// Binary implements the standard Go image.Image and draw.Image interfaces
+// and embeds a two colors palette of type Palette, that itself implements the
+// color.Model interface. Palette allows any color.Color to be converted to
+// OffColor or OnColor.
 //
-// Binary images are created either by calling functions such as NewFromImage
-// and NewBinary, or their counterparts accepting a custom binaryModel.
+// A pixel could be stored as a single bit, but as the main goal of this
+// package is fast manipulation of binary images, Bit, the underlying pixel
+// data type manipulated by Binary image, is 1 byte wide.
+//
+// Binary are instantiated by the following functions:
+//
+//  func New(r image.Rectangle, p Palette) *Binary
+//  func NewFromImage(src image.Image, p Palette) *Binary
+//
+// Author: Aurélien Rainone
+//
 package binimg
 
 import (
