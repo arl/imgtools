@@ -36,7 +36,7 @@ func NewFromImage(src image.Image, p Palette) *Binary
 
 **converted using a custom `Palette`**
 
-<img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/colorgopher.png" width="128">  <img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/redblue.gopher.high.threshold.png" width="128">
+<img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/colorgopher.png" width="128">  <img src="https://github.com/aurelien-rainone/imgtools/blob/readme-images/redblue.gopher.png" width="128">
 
 -----------------------
 
