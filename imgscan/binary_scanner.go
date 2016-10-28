@@ -21,12 +21,6 @@ func NewScanner(img image.Image) (Scanner, error) {
 	case *image.Gray:
 	default:
 	}
-	// NOTE:
-	// an efficient scanner for images using a 8bit depth color model would
-	// be easy to write if there was an efficient function in the Go
-	// standard bytes package that was similar to the C++
-	// std::find_first_not_of function (i.e returns the index of the first
-	// byte of a slice that is different from a given byte, or a set of bytes)
 	return nil, fmt.Errorf("unsupported image type")
 }
 
@@ -54,9 +48,9 @@ func (s *binaryScanner) UniformColor(r image.Rectangle, c color.Color) bool {
 	return true
 }
 
-// Uniform reports wether the given region is uniform. If is the case, the
-// uniform color bit is returned, otherwise the returned Bit is not
-// significative (always the zero value of Bit).
+// Uniform reports wether the region specified by r is uniform or not, and if
+// that is the case the uniform color is returned. If the region is not
+// uniform, the color is undefined.
 func (s *binaryScanner) Uniform(r image.Rectangle) (bool, color.Color) {
 	// color of the first pixel (top-left)
 	first := s.At(r.Min.X, r.Min.Y)
