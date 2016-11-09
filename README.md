@@ -6,7 +6,7 @@
 `imgtools` package contains some utilities for working with 2D images in Go,
 completing the standard Go `image` package.
 
-- [`imgtools/binimg`](./binimg) : binary image implementation of the `image.Image`
+- [`imgtools/binimg`](./binimg/README.md) : binary image implementation of the `image.Image`
 interface. that is an image that has only two possible values for each pixel.
 
-- [`imgtools/imgscan`](./imgscan) : fast scanning of rectangular regions of `image.Image`.
+- [`imgtools/imgscan`](./imgscan/README.md) : fast scanning of rectangular regions of `image.Image`.
