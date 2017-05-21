@@ -17,7 +17,7 @@ func newBinaryFromString(ss []string) *binimg.Binary {
 		}
 	}
 
-	bin := binimg.New(image.Rect(0, 0, w, h), binimg.BlackAndWhite)
+	bin := binimg.New(image.Rect(0, 0, w, h))
 	for y := range ss {
 		for x := range ss[y] {
 			if ss[y][x] == '1' {
@@ -51,7 +51,7 @@ func testIsWhite(t *testing.T, newScanner func(image.Image) Scanner) {
 
 	scanner := newScanner(newBinaryFromString(ss))
 	for _, tt := range testTbl {
-		actual := scanner.UniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), color.White)
+		actual := scanner.UniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), binimg.On)
 		if actual != tt.expected {
 			t.Errorf("%d,%d|%d,%d): expected %v, actual %v", tt.minx, tt.miny, tt.maxx, tt.maxy, tt.expected, actual)
 		}
@@ -81,7 +81,7 @@ func testIsBlack(t *testing.T, newScanner func(image.Image) Scanner) {
 
 	scanner := newScanner(newBinaryFromString(ss))
 	for _, tt := range testTbl {
-		actual := scanner.UniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), color.Black)
+		actual := scanner.UniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), binimg.Off)
 		if actual != tt.expected {
 			t.Errorf("(%d,%d|%d,%d): expected %v, actual %v", tt.minx, tt.miny, tt.maxx, tt.maxy, tt.expected, actual)
 		}
@@ -101,12 +101,12 @@ func testIsUniform(t *testing.T, newScanner func(image.Image) Scanner) {
 	}{
 		{0, 0, 3, 3, false, nil},
 		{1, 1, 3, 3, false, nil},
-		{0, 1, 1, 2, true, color.Black},
-		{0, 0, 1, 1, true, color.White},
-		{1, 0, 2, 1, true, color.White},
-		{1, 0, 3, 2, true, color.White},
-		{1, 2, 3, 3, true, color.Black},
-		{2, 2, 3, 3, true, color.Black},
+		{0, 1, 1, 2, true, binimg.Off},
+		{0, 0, 1, 1, true, binimg.On},
+		{1, 0, 2, 1, true, binimg.On},
+		{1, 0, 3, 2, true, binimg.On},
+		{1, 2, 3, 3, true, binimg.Off},
+		{2, 2, 3, 3, true, binimg.Off},
 	}
 
 	scanner := newScanner(newBinaryFromString(ss))
@@ -155,7 +155,7 @@ func benchmarkScanner(b *testing.B, pngfile string, newScanner func(image.Image)
 	img, err := test.LoadPNG(pngfile)
 	test.CheckB(b, err)
 
-	scanner := newScanner(binimg.NewFromImage(img, binimg.BlackAndWhite))
+	scanner := newScanner(binimg.NewFromImage(img))
 
 	// run N times
 	b.ResetTimer()
