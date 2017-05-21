@@ -37,7 +37,7 @@ func TestIsOpaque(t *testing.T) {
 	src, err := test.LoadPNG("../testdata/colorgopher.png")
 	test.Check(t, err)
 
-	bin := NewFromImage(src, BlackAndWhite)
+	bin := NewFromImage(src)
 	if bin.Opaque() != true {
 		t.Errorf("expected Opaque to be true, got false")
 	}
@@ -47,7 +47,7 @@ func TestSubImage(t *testing.T) {
 	src, err := test.LoadPNG("../testdata/colorgopher.png")
 	test.Check(t, err)
 
-	sub := NewFromImage(src, BlackAndWhite).SubImage(image.Rect(352, 352, 480, 480))
+	sub := NewFromImage(src).SubImage(image.Rect(352, 352, 480, 480))
 	refname := "../testdata/bwgopher.bottom-left.png"
 	ref, err := test.LoadPNG(refname)
 	test.Check(t, err)
@@ -65,7 +65,7 @@ func TestPixelOperations(t *testing.T) {
 	)
 
 	// create a 10x10 Binary image
-	bin = New(image.Rect(0, 0, 10, 10), BlackAndWhite)
+	bin = New(image.Rect(0, 0, 10, 10))
 	x, y := 9, 9
 
 	blackRGBA := color.RGBA{0, 0, 0, 0xff}
@@ -73,14 +73,14 @@ func TestPixelOperations(t *testing.T) {
 
 	// get/set pixel from color.Color
 	bin.Set(x, y, whiteRGBA)
-	bit = bin.Palette.ConvertBit(bin.At(x, y))
+	bit = bin.model.Convert(bin.At(x, y)).(Bit)
 	if bit != On {
 		t.Errorf("want bit at (%d,%d) to be On, got %v", x, y, bit)
 	}
 
 	// get/set pixel from color.Color
 	bin.Set(x, y, blackRGBA)
-	bit = bin.Palette.ConvertBit(bin.At(x, y))
+	bit = bin.model.Convert(bin.At(x, y)).(Bit)
 	if bit != Off {
 		t.Errorf("want bit at (%d,%d) to be Off, got %v", x, y, bit)
 	}
@@ -97,7 +97,7 @@ func TestBitOperations(t *testing.T) {
 	)
 
 	// create a 10x10 Binary image
-	bin = New(image.Rect(0, 0, 10, 10), BlackAndWhite)
+	bin = New(image.Rect(0, 0, 10, 10))
 	x, y := 9, 9
 
 	// get/set pixel from Bit
@@ -125,7 +125,7 @@ func TestSetEmptyRect(t *testing.T) {
 	)
 
 	// create a 10x10 Binary image
-	bin = New(image.Rect(0, 0, 10, 10), BlackAndWhite)
+	bin = New(image.Rect(0, 0, 10, 10))
 
 	// SetRect (empty rect)
 	bin.SetRect(image.Rect(0, 0, 0, 0), On)
@@ -141,7 +141,7 @@ func TestSetRect(t *testing.T) {
 	)
 
 	// create a 10x10 Binary image
-	bin = New(image.Rect(0, 0, 10, 10), BlackAndWhite)
+	bin = New(image.Rect(0, 0, 10, 10))
 
 	// SetRect
 	bin.SetRect(image.Rect(0, 0, 1, 1), On)
@@ -170,7 +170,7 @@ func TestSetOutOfBoundsRect(t *testing.T) {
 	)
 
 	// create a 10x10 Binary image
-	bin = New(image.Rect(0, 0, 10, 10), BlackAndWhite)
+	bin = New(image.Rect(0, 0, 10, 10))
 
 	// setting a rect that goes out of the image bounds should not panic
 	bin.SetRect(image.Rect(8, 8, 12, 12), On)
