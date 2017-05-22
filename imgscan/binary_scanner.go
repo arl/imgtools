@@ -28,10 +28,10 @@ type binaryScanner struct {
 	*binimg.Binary
 }
 
-// UniformColor reports wether all the pixels of given region are of the color c.
+// IsUniformColor indicates if the region r is only made of pixels of color c.
 //
-// If c is not a color ot type binimg.Bit, UniformColor will panic.
-func (s *binaryScanner) UniformColor(r image.Rectangle, c color.Color) bool {
+// The scan stops at the first pixel encountered that is different from c.
+func (s *binaryScanner) IsUniformColor(r image.Rectangle, c color.Color) bool {
 	// in a binary image, pixel/bytes are 1 or 0, we want the other color for
 	// bytes.IndexBytes
 	other := c.(binimg.Bit).Other().V
@@ -46,15 +46,34 @@ func (s *binaryScanner) UniformColor(r image.Rectangle, c color.Color) bool {
 	return true
 }
 
-// IsUniform reports wether the given region is uniform. If that is the case, the
+// IsUniform indicates if the region r is uniform. If that is the case, the
 // uniform color is returned, otherwise the returned color is nil.
+//
+// The scan stops at the first pixel encountered that is different from the
+// previous one.
 func (s *binaryScanner) IsUniform(r image.Rectangle) (bool, color.Color) {
 	// bit color of the first pixel (top-left)
 	first := s.BitAt(r.Min.X, r.Min.Y)
 
 	// check if all the pixels of the region are of this color.
-	if s.UniformColor(r, first) {
+	if s.IsUniformColor(r, first) {
 		return true, first
 	}
 	return false, nil
+}
+
+// AverageColor indicates wether the region is uniform and the average color
+// of the region r. If all the pixels have the same color (i.e the region is
+// uniform) then the average color is that color.
+//
+// A full scan of the region is performed in order to determine the average
+// color.
+func (s *binaryScanner) AverageColor(r image.Rectangle) (bool, color.Color) {
+	// if region is uniform
+	if uniform, col := s.IsUniform(r); uniform {
+		// return its color
+		return true, col
+	}
+	// or consider the whole region as made of On pixel (arbitrary)
+	return false, binimg.On
 }

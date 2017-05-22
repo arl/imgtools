@@ -51,7 +51,7 @@ func testIsWhite(t *testing.T, newScanner func(image.Image) Scanner) {
 
 	scanner := newScanner(newBinaryFromString(ss))
 	for _, tt := range testTbl {
-		actual := scanner.UniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), binimg.On)
+		actual := scanner.IsUniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), binimg.On)
 		if actual != tt.expected {
 			t.Errorf("%d,%d|%d,%d): expected %v, actual %v", tt.minx, tt.miny, tt.maxx, tt.maxy, tt.expected, actual)
 		}
@@ -81,7 +81,7 @@ func testIsBlack(t *testing.T, newScanner func(image.Image) Scanner) {
 
 	scanner := newScanner(newBinaryFromString(ss))
 	for _, tt := range testTbl {
-		actual := scanner.UniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), binimg.Off)
+		actual := scanner.IsUniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), binimg.Off)
 		if actual != tt.expected {
 			t.Errorf("(%d,%d|%d,%d): expected %v, actual %v", tt.minx, tt.miny, tt.maxx, tt.maxy, tt.expected, actual)
 		}
@@ -160,8 +160,8 @@ func benchmarkScanner(b *testing.B, pngfile string, newScanner func(image.Image)
 	// run N times
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		scanner.UniformColor(img.Bounds(), color.White)
-		scanner.UniformColor(img.Bounds(), color.Black)
+		scanner.IsUniformColor(img.Bounds(), color.White)
+		scanner.IsUniformColor(img.Bounds(), color.Black)
 		scanner.IsUniform(img.Bounds())
 	}
 }
