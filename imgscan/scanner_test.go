@@ -111,7 +111,7 @@ func testIsUniform(t *testing.T, newScanner func(image.Image) Scanner) {
 
 	scanner := newScanner(newBinaryFromString(ss))
 	for _, tt := range testTbl {
-		actual, color := scanner.Uniform(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy))
+		actual, color := scanner.IsUniform(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy))
 		if actual != tt.expected {
 			t.Errorf("(%d,%d|%d,%d): expected %v, actual %v", tt.minx, tt.miny, tt.maxx, tt.maxy, tt.expected, actual)
 		}
@@ -162,7 +162,7 @@ func benchmarkScanner(b *testing.B, pngfile string, newScanner func(image.Image)
 	for n := 0; n < b.N; n++ {
 		scanner.UniformColor(img.Bounds(), color.White)
 		scanner.UniformColor(img.Bounds(), color.Black)
-		scanner.Uniform(img.Bounds())
+		scanner.IsUniform(img.Bounds())
 	}
 }
 

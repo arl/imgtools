@@ -46,9 +46,9 @@ func (s *binaryScanner) UniformColor(r image.Rectangle, c color.Color) bool {
 	return true
 }
 
-// Uniform reports wether the given region is uniform. If that is the case, the
+// IsUniform reports wether the given region is uniform. If that is the case, the
 // uniform color is returned, otherwise the returned color is nil.
-func (s *binaryScanner) Uniform(r image.Rectangle) (bool, color.Color) {
+func (s *binaryScanner) IsUniform(r image.Rectangle) (bool, color.Color) {
 	// bit color of the first pixel (top-left)
 	first := s.BitAt(r.Min.X, r.Min.Y)
 
