@@ -32,9 +32,7 @@ var (
 )
 
 // Bit represents a Black or White only binary color.
-type Bit struct {
-	V byte
-}
+type Bit struct{ V byte }
 
 // RGBA returns the red, green, blue and alpha values for a Bit color.
 //
@@ -68,6 +66,7 @@ func (m binaryModel) Convert(c color.Color) color.Color {
 	return Black
 }
 
+// BinaryModel is the color model for binary images.
 var BinaryModel binaryModel
 
 // Binary is an in-memory image whose At method returns Bit values.
@@ -181,8 +180,7 @@ func New(r image.Rectangle) *Binary {
 	return &Binary{pix, 1 * w, r}
 }
 
-// NewFromImage returns the binary image that is the conversion of the given
-// source image.
+// NewFromImage returns a new binary image that is the conversion of src image.
 func NewFromImage(src image.Image) *Binary {
 	dst := New(src.Bounds())
 	draw.Draw(dst, dst.Bounds(), src, image.Point{}, draw.Src)
