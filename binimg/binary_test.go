@@ -8,31 +8,6 @@ import (
 	"github.com/aurelien-rainone/imgtools/internal/test"
 )
 
-func TestConvertImagePalette(t *testing.T) {
-	src, err := test.LoadPNG("../testdata/colorgopher.png")
-	test.Check(t, err)
-	var testTbl = []struct {
-		p   Palette // the palette to use
-		ref string  // reference file
-	}{
-		{BlackAndWhite, "../testdata/bwgopher.png"},
-		{BlackAndWhiteLowThreshold, "../testdata/bwgopher.low.threshold.png"},
-		{BlackAndWhiteHighThreshold, "../testdata/bwgopher.high.threshold.png"},
-		{Palette{97, color.RGBA{255, 0, 0, 255}, color.RGBA{0, 0, 255, 255}}, "../testdata/redblue.gopher.png"},
-	}
-
-	for _, tt := range testTbl {
-		dst := NewFromImage(src, tt.p)
-		ref, err := test.LoadPNG(tt.ref)
-		test.Check(t, err)
-
-		err = test.Diff(ref, dst)
-		if err != nil {
-			t.Errorf("converted image is different from %s: %v", tt.ref, err)
-		}
-	}
-}
-
 func TestIsOpaque(t *testing.T) {
 	src, err := test.LoadPNG("../testdata/colorgopher.png")
 	test.Check(t, err)
@@ -73,14 +48,14 @@ func TestPixelOperations(t *testing.T) {
 
 	// get/set pixel from color.Color
 	bin.Set(x, y, whiteRGBA)
-	bit = bin.model.Convert(bin.At(x, y)).(Bit)
+	bit = BinaryModel.Convert(bin.At(x, y)).(Bit)
 	if bit != On {
 		t.Errorf("want bit at (%d,%d) to be On, got %v", x, y, bit)
 	}
 
 	// get/set pixel from color.Color
 	bin.Set(x, y, blackRGBA)
-	bit = bin.model.Convert(bin.At(x, y)).(Bit)
+	bit = BinaryModel.Convert(bin.At(x, y)).(Bit)
 	if bit != Off {
 		t.Errorf("want bit at (%d,%d) to be Off, got %v", x, y, bit)
 	}

@@ -53,17 +53,7 @@ func (c Bit) Other() Bit {
 	return Black
 }
 
-// Various binary models with different thresholds.
-var (
-	BinaryModelLowThreshold    = NewBinaryModel(37)
-	BinaryModelMediumThreshold = NewBinaryModel(97)
-	BinaryModelHighThreshold   = NewBinaryModel(197)
-	BinaryModel                = BinaryModelMediumThreshold
-)
-
-type binaryModel struct {
-	threshold uint8
-}
+type binaryModel struct{}
 
 func (m binaryModel) Convert(c color.Color) color.Color {
 	if _, ok := c.(Bit); ok {
@@ -72,19 +62,13 @@ func (m binaryModel) Convert(c color.Color) color.Color {
 	r, g, b, _ := c.RGBA()
 
 	y := (299*r + 587*g + 114*b + 500) / 1000
-	if uint8(y>>8) > m.threshold {
+	if uint8(y>>8) > 97 {
 		return White
 	}
 	return Black
 }
 
-// NewBinaryModel creates a new binaryModel that converts any color to a Bit.
-//
-// binaryModel is an opaque (as in not exported) type. The threshold is the
-// limit over which source colors are converted to White, under to Black.
-func NewBinaryModel(threshold uint8) binaryModel {
-	return binaryModel{threshold}
-}
+var BinaryModel binaryModel
 
 // Binary is an in-memory image whose At method returns Bit values.
 type Binary struct {
@@ -95,12 +79,10 @@ type Binary struct {
 	Stride int
 	// Rect is the image's bounds.
 	Rect image.Rectangle
-
-	model binaryModel
 }
 
 // ColorModel returns the image.Image's color model.
-func (b *Binary) ColorModel() color.Model { return b.model }
+func (b *Binary) ColorModel() color.Model { return BinaryModel }
 
 // Bounds returns the domain for which At can return non-zero color.
 // The bounds do not necessarily contain the point (0, 0).
@@ -139,7 +121,7 @@ func (b *Binary) Set(x, y int, c color.Color) {
 		return
 	}
 	i := b.PixOffset(x, y)
-	b.Pix[i] = b.model.Convert(c).(Bit).V
+	b.Pix[i] = BinaryModel.Convert(c).(Bit).V
 }
 
 // SetBit sets the Bit of the pixel at (x, y).
@@ -196,7 +178,7 @@ func (b *Binary) Opaque() bool {
 func New(r image.Rectangle) *Binary {
 	w, h := r.Dx(), r.Dy()
 	pix := make([]uint8, 1*w*h)
-	return &Binary{pix, 1 * w, r, BinaryModel}
+	return &Binary{pix, 1 * w, r}
 }
 
 // NewFromImage returns the binary image that is the conversion of the given
