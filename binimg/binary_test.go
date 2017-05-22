@@ -14,7 +14,7 @@ func TestIsOpaque(t *testing.T) {
 
 	bin := NewFromImage(src)
 	if bin.Opaque() != true {
-		t.Errorf("expected Opaque to be true, got false")
+		t.Errorf("want Opaque to be true, got false")
 	}
 }
 
@@ -30,6 +30,13 @@ func TestSubImage(t *testing.T) {
 	err = test.Diff(ref, sub)
 	if err != nil {
 		t.Errorf("converted image is different from %s: %v", refname, err)
+	}
+}
+
+func TestEmptySubImage(t *testing.T) {
+	empty := New(image.Rect(-5, -5, 10, 10)).SubImage(image.Rect(20, 20, 50, 50))
+	if empty.Bounds() != New(image.Rectangle{}).Bounds() {
+		t.Errorf("SubImage should produce an image with empty bounds when rects do not intersect")
 	}
 }
 
