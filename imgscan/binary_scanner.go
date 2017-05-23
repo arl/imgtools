@@ -28,36 +28,52 @@ type binaryScanner struct {
 	*binimg.Binary
 }
 
-// UniformColor reports wether all the pixels of given region are of the color c.
-func (s *binaryScanner) UniformColor(r image.Rectangle, c color.Color) bool {
-	// we want the other color for bytes.IndexBytes
-	// Bit zero value is Off
-	var other binimg.Bit
-	if s.Palette.OffColor == c {
-		other = binimg.On
-	}
-
+// IsUniformColor indicates if the region r is only made of pixels of color c.
+//
+// The scan stops at the first pixel encountered that is different from c.
+func (s *binaryScanner) IsUniformColor(r image.Rectangle, c color.Color) bool {
+	// in a binary image, pixel/bytes are 1 or 0, we want the other color for
+	// bytes.IndexBytes
+	other := c.(binimg.Bit).Other().V
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		i := s.PixOffset(r.Min.X, y)
 		j := s.PixOffset(r.Max.X, y)
-		if bytes.IndexByte(s.Pix[i:j], byte(other)) != -1 {
-			// quit at the first byte that is not 'other'
+		// look for the first pixel that is not c
+		if bytes.IndexByte(s.Pix[i:j], other) != -1 {
 			return false
 		}
 	}
 	return true
 }
 
-// Uniform reports wether the region specified by r is uniform or not, and if
-// that is the case the uniform color is returned. If the region is not
-// uniform, the color is undefined.
-func (s *binaryScanner) Uniform(r image.Rectangle) (bool, color.Color) {
-	// color of the first pixel (top-left)
-	first := s.At(r.Min.X, r.Min.Y)
+// IsUniform indicates if the region r is uniform. If that is the case, the
+// uniform color is returned, otherwise the returned color is nil.
+//
+// The scan stops at the first pixel encountered that is different from the
+// previous one.
+func (s *binaryScanner) IsUniform(r image.Rectangle) (bool, color.Color) {
+	// bit color of the first pixel (top-left)
+	first := s.BitAt(r.Min.X, r.Min.Y)
 
 	// check if all the pixels of the region are of this color.
-	if s.UniformColor(r, first) {
+	if s.IsUniformColor(r, first) {
 		return true, first
 	}
 	return false, nil
+}
+
+// AverageColor indicates wether the region is uniform and the average color
+// of the region r. If all the pixels have the same color (i.e the region is
+// uniform) then the average color is that color.
+//
+// A full scan of the region is performed in order to determine the average
+// color.
+func (s *binaryScanner) AverageColor(r image.Rectangle) (bool, color.Color) {
+	// if region is uniform
+	if uniform, col := s.IsUniform(r); uniform {
+		// return its color
+		return true, col
+	}
+	// or consider the whole region as made of On pixel (arbitrary)
+	return false, binimg.On
 }

@@ -8,18 +8,21 @@ import (
 	"testing"
 )
 
+// Check ensures that err is nil, ending the execution if it's not the case.
 func Check(t *testing.T, err error) {
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
+// CheckB ensures that err is nil, ending the execution if it's not the case.
 func CheckB(b *testing.B, err error) {
 	if err != nil {
 		b.Fatal(err)
 	}
 }
 
+// LoadPNG loads and returns the PNG image located at filename.
 func LoadPNG(filename string) (image.Image, error) {
 	var (
 		img image.Image
@@ -38,6 +41,7 @@ func LoadPNG(filename string) (image.Image, error) {
 	return img, nil
 }
 
+// SavePNG saves img as a PNG located at filename.
 func SavePNG(img image.Image, filename string) error {
 	out, err := os.Create(filename)
 	if err != nil {
@@ -52,6 +56,7 @@ func SavePNG(img image.Image, filename string) error {
 	return nil
 }
 
+// Diff compares 2 images and return an error if they differ.
 func Diff(m0, m1 image.Image) error {
 	b0, b1 := m0.Bounds(), m1.Bounds()
 	if !b0.Size().Eq(b1.Size()) {
