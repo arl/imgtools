@@ -51,10 +51,10 @@ func (c Bit) Other() Bit {
 	return Black
 }
 
-// BinaryModel is the color model for binary images.
-var BinaryModel color.Model = color.ModelFunc(binaryModel)
+// Model is the color model for binary images.
+var Model color.Model = color.ModelFunc(model)
 
-func binaryModel(c color.Color) color.Color {
+func model(c color.Color) color.Color {
 	if _, ok := c.(Bit); ok {
 		return c
 	}
@@ -79,7 +79,7 @@ type Binary struct {
 }
 
 // ColorModel returns the image.Image's color model.
-func (b *Binary) ColorModel() color.Model { return BinaryModel }
+func (b *Binary) ColorModel() color.Model { return Model }
 
 // Bounds returns the domain for which At can return non-zero color.
 // The bounds do not necessarily contain the point (0, 0).
@@ -118,7 +118,7 @@ func (b *Binary) Set(x, y int, c color.Color) {
 		return
 	}
 	i := b.PixOffset(x, y)
-	b.Pix[i] = BinaryModel.Convert(c).(Bit).V
+	b.Pix[i] = Model.Convert(c).(Bit).V
 }
 
 // SetBit sets the Bit of the pixel at (x, y).

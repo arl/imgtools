@@ -55,14 +55,14 @@ func TestPixelOperations(t *testing.T) {
 
 	// get/set pixel from color.Color
 	bin.Set(x, y, whiteRGBA)
-	bit = BinaryModel.Convert(bin.At(x, y)).(Bit)
+	bit = Model.Convert(bin.At(x, y)).(Bit)
 	if bit != On {
 		t.Errorf("want bit at (%d,%d) to be On, got %v", x, y, bit)
 	}
 
 	// get/set pixel from color.Color
 	bin.Set(x, y, blackRGBA)
-	bit = BinaryModel.Convert(bin.At(x, y)).(Bit)
+	bit = Model.Convert(bin.At(x, y)).(Bit)
 	if bit != Off {
 		t.Errorf("want bit at (%d,%d) to be Off, got %v", x, y, bit)
 	}
@@ -111,7 +111,7 @@ func TestBitOperations(t *testing.T) {
 
 func TestColorModelIsComparable(t *testing.T) {
 	bin := New(image.Rect(0, 0, 10, 10))
-	if bin.ColorModel() != BinaryModel {
+	if bin.ColorModel() != Model {
 		t.Errorf("Binary.ColorModel should be comparable")
 	}
 }
