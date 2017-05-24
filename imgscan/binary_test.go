@@ -17,15 +17,15 @@ func newBinaryFromString(ss []string) *binimg.Binary {
 		}
 	}
 
-	bin := binimg.New(image.Rect(0, 0, w, h))
+	img := binimg.New(image.Rect(0, 0, w, h))
 	for y := range ss {
 		for x := range ss[y] {
 			if ss[y][x] == '1' {
-				bin.SetBit(x, y, binimg.On)
+				img.SetBit(x, y, binimg.On)
 			}
 		}
 	}
-	return bin
+	return img
 }
 
 func testIsWhite(t *testing.T, newScanner func(image.Image) Scanner) {
