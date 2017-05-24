@@ -28,127 +28,80 @@ func newBinaryFromString(ss []string) *binimg.Binary {
 	return img
 }
 
-func testIsWhite(t *testing.T, newScanner func(image.Image) Scanner) {
+func TestBinaryScannerIsUniformColor(t *testing.T) {
 	ss := []string{
 		"000",
 		"100",
 		"011",
 	}
 
-	var testTbl = []struct {
+	var tests = []struct {
 		minx, miny, maxx, maxy int
-		expected               bool
+		col                    color.Color
+		uniform                bool
 	}{
-		{0, 0, 3, 3, false},
-		{1, 1, 3, 3, false},
-		{0, 1, 1, 2, true},
-		{0, 0, 1, 1, false},
-		{1, 0, 2, 1, false},
-		{1, 0, 3, 2, false},
-		{1, 2, 3, 3, true},
-		{2, 2, 3, 3, true},
+		{0, 0, 3, 3, binimg.On, false},
+		{0, 0, 3, 3, binimg.Off, false},
+		{1, 1, 3, 3, binimg.On, false},
+		{1, 1, 3, 3, binimg.Off, false},
+		{0, 1, 1, 2, binimg.On, true},
+		{0, 1, 1, 2, binimg.Off, false},
+		{0, 0, 1, 1, binimg.On, false},
+		{0, 0, 1, 1, binimg.Off, true},
+		{1, 0, 2, 1, binimg.On, false},
+		{1, 0, 2, 1, binimg.Off, true},
+		{1, 0, 3, 2, binimg.On, false},
+		{1, 0, 3, 2, binimg.Off, true},
+		{1, 2, 3, 3, binimg.On, true},
+		{1, 2, 3, 3, binimg.Off, false},
+		{2, 2, 3, 3, binimg.On, true},
+		{2, 2, 3, 3, binimg.Off, false},
 	}
 
-	scanner := newScanner(newBinaryFromString(ss))
-	for _, tt := range testTbl {
-		actual := scanner.IsUniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), binimg.On)
-		if actual != tt.expected {
-			t.Errorf("%d,%d|%d,%d): expected %v, actual %v", tt.minx, tt.miny, tt.maxx, tt.maxy, tt.expected, actual)
+	scanner, err := NewScanner(newBinaryFromString(ss))
+	test.Check(t, err)
+	for _, tt := range tests {
+		got := scanner.IsUniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), tt.col)
+		if got != tt.uniform {
+			t.Errorf("want %v for IsUniformColor(rect{%d,%d|%d,%d}, col:%v), got %v", tt.uniform, tt.minx, tt.miny, tt.maxx, tt.maxy, tt.col, got)
 		}
 	}
 }
 
-func testIsBlack(t *testing.T, newScanner func(image.Image) Scanner) {
+func TestBinaryScannerIsUniform(t *testing.T) {
 	ss := []string{
-		"111",
-		"011",
+		"000",
 		"100",
-	}
-
-	var testTbl = []struct {
-		minx, miny, maxx, maxy int
-		expected               bool
-	}{
-		{0, 0, 3, 3, false},
-		{1, 1, 3, 3, false},
-		{0, 1, 1, 2, true},
-		{0, 0, 1, 1, false},
-		{1, 0, 2, 1, false},
-		{1, 0, 3, 2, false},
-		{1, 2, 3, 3, true},
-		{2, 2, 3, 3, true},
-	}
-
-	scanner := newScanner(newBinaryFromString(ss))
-	for _, tt := range testTbl {
-		actual := scanner.IsUniformColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy), binimg.Off)
-		if actual != tt.expected {
-			t.Errorf("(%d,%d|%d,%d): expected %v, actual %v", tt.minx, tt.miny, tt.maxx, tt.maxy, tt.expected, actual)
-		}
-	}
-}
-
-func testIsUniform(t *testing.T, newScanner func(image.Image) Scanner) {
-	ss := []string{
-		"111",
 		"011",
-		"100",
 	}
-	var testTbl = []struct {
+
+	var tests = []struct {
 		minx, miny, maxx, maxy int
-		expected               bool
-		expectedColor          color.Color
+		col                    color.Color
+		uniform                bool
 	}{
-		{0, 0, 3, 3, false, nil},
-		{1, 1, 3, 3, false, nil},
-		{0, 1, 1, 2, true, binimg.Off},
-		{0, 0, 1, 1, true, binimg.On},
-		{1, 0, 2, 1, true, binimg.On},
-		{1, 0, 3, 2, true, binimg.On},
-		{1, 2, 3, 3, true, binimg.Off},
-		{2, 2, 3, 3, true, binimg.Off},
+		{0, 0, 3, 3, nil, false},
+		{1, 1, 3, 3, nil, false},
+		{0, 1, 1, 2, binimg.On, true},
+		{0, 0, 1, 1, binimg.Off, true},
+		{1, 0, 2, 1, binimg.Off, true},
+		{1, 0, 3, 2, binimg.Off, true},
+		{1, 1, 2, 3, nil, false},
+		{1, 2, 3, 3, binimg.On, true},
+		{2, 2, 3, 3, binimg.On, true},
 	}
 
-	scanner := newScanner(newBinaryFromString(ss))
-	for _, tt := range testTbl {
-		actual, color := scanner.IsUniform(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy))
-		if actual != tt.expected {
-			t.Errorf("(%d,%d|%d,%d): expected %v, actual %v", tt.minx, tt.miny, tt.maxx, tt.maxy, tt.expected, actual)
+	scanner, err := NewScanner(newBinaryFromString(ss))
+	test.Check(t, err)
+	for _, tt := range tests {
+		got, col := scanner.IsUniform(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy))
+		if got != tt.uniform {
+			t.Errorf("want uniform=%v for IsUniform(rect{%d,%d|%d,%d}), got %v", tt.uniform, tt.minx, tt.miny, tt.maxx, tt.maxy, tt.col, got)
 		}
-		if color != tt.expectedColor {
-			t.Errorf("(%d,%d|%d,%d): expected color %v, actual %v", tt.minx, tt.miny, tt.maxx, tt.maxy, tt.expectedColor, color)
+		if col != tt.col {
+			t.Errorf("want color=%v for IsUniform(rect{%d,%d|%d,%d}), got %v", tt.col, tt.minx, tt.miny, tt.maxx, tt.maxy, col)
 		}
 	}
-}
-
-func TestLinesScannerIsWhite(t *testing.T) {
-	testIsWhite(t,
-		func(img image.Image) Scanner {
-			s, err := NewScanner(img)
-			test.Check(t, err)
-			return s
-		},
-	)
-}
-
-func TestLinesScannerIsBlack(t *testing.T) {
-	testIsBlack(t,
-		func(img image.Image) Scanner {
-			s, err := NewScanner(img)
-			test.Check(t, err)
-			return s
-		},
-	)
-}
-
-func TestLinesScannerIsUniform(t *testing.T) {
-	testIsUniform(t,
-		func(img image.Image) Scanner {
-			s, err := NewScanner(img)
-			test.Check(t, err)
-			return s
-		},
-	)
 }
 
 func benchmarkScanner(b *testing.B, pngfile string, newScanner func(image.Image) Scanner) {
