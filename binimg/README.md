@@ -4,18 +4,18 @@
 
 
 `binimg` package proposes an in-memory *binary image format*, that is an image
-that has only two possible values for each pixel. Typically, the two colors
-used for a binary image are black and white, though any two colors can be used.
+that has only two possible values for each pixel. In this package, we refer to
+those 2 colors as `binimg.On` and `binimg.Off`, that respectively convert (via
+`binimg.Model`) to the standard Go colors `color.White` and `color.Black`.
+`binimg.Model` implements the `color.Model` interface.
+
 Such images are also referred to as *bi-level*, or *two-level*.
 
-`Binary` implements the standard Go `image.Image` and `draw.Image` interfaces
-and embeds a two colors palette of type `Palette`, that itself implements the
-`color.Model` interface. `Palette` allows any `color.Color` to be converted to
-`OffColor` or `OnColor`.
+`binimg.Binary` implements the standard Go `image.Image` and `draw.Image`.
 
 A pixel could be stored as a single bit, but as the main goal of this package
-is fast manipulation of binary images, `Bit`, the underlying pixel data
-type manipulated by `Binary` image, is 1 `byte` wide.
+is fast manipulation of binary images, `binimg.Bit`, the underlying pixel data
+type manipulated by `binimg.Binary` image, is 1 `byte` wide.
 
 `Binary` are instantiated by the following functions:
 
@@ -25,6 +25,8 @@ func NewFromImage(src image.Image, p Palette) *Binary
 ```
 
 -----------------------
+TODO: REMOVE (there is no more palette, but show an exemple of conversion from a color image to a binary one, with standard color model and maybe how to use a custom color model by subclassing/composition and providing a new color model... if that seems useful)
+ remove all references to binimg.Black and binimg.White
 
 **`BlackAndWhite` predefined `Palette`**
 
