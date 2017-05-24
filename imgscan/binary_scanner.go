@@ -2,27 +2,11 @@ package imgscan
 
 import (
 	"bytes"
-	"fmt"
 	"image"
 	"image/color"
 
 	"github.com/aurelien-rainone/imgtools/binimg"
 )
-
-// NewScanner returns a new Scanner of the given image.Image.
-//
-// The actual scanner implementation depends on the image bit depth and the
-// availability of an implementation.
-func NewScanner(img image.Image) (Scanner, error) {
-	switch impl := img.(type) {
-	case *binimg.Binary:
-		return &binaryScanner{impl}, nil
-	case *image.Alpha:
-	case *image.Gray:
-	default:
-	}
-	return nil, fmt.Errorf("unsupported image type")
-}
 
 type binaryScanner struct {
 	*binimg.Binary
@@ -76,4 +60,9 @@ func (s *binaryScanner) AverageColor(r image.Rectangle) (bool, color.Color) {
 	}
 	// or consider the whole region as made of On pixel (arbitrary)
 	return false, binimg.On
+}
+
+// NewBinaryScanner creates a binary scanner from a binary image.
+func NewBinaryScanner(img *binimg.Binary) Scanner {
+	return &binaryScanner{img}
 }
