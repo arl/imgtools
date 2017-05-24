@@ -96,7 +96,7 @@ func TestBinaryScannerIsUniform(t *testing.T) {
 	for _, tt := range tests {
 		uniform, col := scanner.IsUniform(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy))
 		if uniform != tt.uniform {
-			t.Errorf("want uniform=%v for IsUniform(rect{%d,%d|%d,%d}), got %v", tt.uniform, tt.minx, tt.miny, tt.maxx, tt.maxy, tt.col, uniform)
+			t.Errorf("want uniform=%v for IsUniform(rect{%d,%d|%d,%d}), got %v", tt.uniform, tt.minx, tt.miny, tt.maxx, tt.maxy, uniform)
 		}
 		if col != tt.col {
 			t.Errorf("want color=%v for IsUniform(rect{%d,%d|%d,%d}), got %v", tt.col, tt.minx, tt.miny, tt.maxx, tt.maxy, col)
@@ -132,7 +132,7 @@ func TestBinaryScannerAverageColor(t *testing.T) {
 	for _, tt := range tests {
 		uniform, col := scanner.AverageColor(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy))
 		if uniform != tt.uniform {
-			t.Errorf("want uniform=%v for AverageColor(rect{%d,%d|%d,%d}), got %v", tt.uniform, tt.minx, tt.miny, tt.maxx, tt.maxy, tt.col, uniform)
+			t.Errorf("want uniform=%v for AverageColor(rect{%d,%d|%d,%d}), got %v", tt.uniform, tt.minx, tt.miny, tt.maxx, tt.maxy, uniform)
 		}
 		if col != tt.col {
 			t.Errorf("want color=%v for AverageColor(rect{%d,%d|%d,%d}), got %v", tt.col, tt.minx, tt.miny, tt.maxx, tt.maxy, col)

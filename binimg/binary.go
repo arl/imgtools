@@ -51,9 +51,10 @@ func (c Bit) Other() Bit {
 	return Black
 }
 
-type binaryModel struct{}
+// BinaryModel is the color model for binary images.
+var BinaryModel color.Model = color.ModelFunc(binaryModel)
 
-func (m binaryModel) Convert(c color.Color) color.Color {
+func binaryModel(c color.Color) color.Color {
 	if _, ok := c.(Bit); ok {
 		return c
 	}
@@ -65,9 +66,6 @@ func (m binaryModel) Convert(c color.Color) color.Color {
 	}
 	return Black
 }
-
-// BinaryModel is the color model for binary images.
-var BinaryModel binaryModel
 
 // Binary is an in-memory image whose At method returns Bit values.
 type Binary struct {

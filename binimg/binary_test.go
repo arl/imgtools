@@ -99,6 +99,21 @@ func TestBitOperations(t *testing.T) {
 	// setting a bit that is out of the image bounds should not panic, nor do nothing
 	sub := bin.SubImage(image.Rect(1, 1, 2, 2)).(*Binary)
 	sub.SetBit(4, 4, On)
+
+	// getting a bit that is out of the image bound should return the zero
+	// value of the color type
+	bit = sub.BitAt(4, 4)
+	var zero Bit
+	if bit != zero {
+		t.Errorf("expected BitAt to return Bit{} for out-of-bounds bit, got %v", bit)
+	}
+}
+
+func TestColorModelIsComparable(t *testing.T) {
+	bin := New(image.Rect(0, 0, 10, 10))
+	if bin.ColorModel() != BinaryModel {
+		t.Errorf("Binary.ColorModel should be comparable")
+	}
 }
 
 func TestSetEmptyRect(t *testing.T) {
