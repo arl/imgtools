@@ -47,8 +47,8 @@ func NewScanner(img image.Image) (Scanner, error) {
 		err error
 	)
 	switch img.(type) {
-	case *binimg.Binary:
-		s = NewBinaryScanner(img.(*binimg.Binary))
+	case *binimg.Image:
+		s = NewBinaryScanner(img.(*binimg.Image))
 	case *image.Gray:
 		s = NewGrayScanner(img.(*image.Gray))
 	default:

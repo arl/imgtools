@@ -9,7 +9,7 @@ import (
 )
 
 type binaryScanner struct {
-	*binimg.Binary
+	*binimg.Image
 }
 
 // IsUniformColor indicates if the region r is only made of pixels of color c.
@@ -63,6 +63,6 @@ func (s *binaryScanner) AverageColor(r image.Rectangle) (bool, color.Color) {
 }
 
 // NewBinaryScanner creates a binary scanner from a binary image.
-func NewBinaryScanner(img *binimg.Binary) Scanner {
+func NewBinaryScanner(img *binimg.Image) Scanner {
 	return &binaryScanner{img}
 }

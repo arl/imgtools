@@ -42,7 +42,7 @@ func TestEmptySubImage(t *testing.T) {
 
 func TestPixelOperations(t *testing.T) {
 	var (
-		bin *Binary
+		bin *Image
 		bit Bit
 	)
 
@@ -68,13 +68,13 @@ func TestPixelOperations(t *testing.T) {
 	}
 
 	// setting a pixel that is out of the image bounds should not panic, nor do nothing
-	sub := bin.SubImage(image.Rect(1, 1, 2, 2)).(*Binary)
+	sub := bin.SubImage(image.Rect(1, 1, 2, 2)).(*Image)
 	sub.Set(4, 4, whiteRGBA)
 }
 
 func TestBitOperations(t *testing.T) {
 	var (
-		bin *Binary
+		bin *Image
 		bit Bit
 	)
 
@@ -97,7 +97,7 @@ func TestBitOperations(t *testing.T) {
 	}
 
 	// setting a bit that is out of the image bounds should not panic, nor do nothing
-	sub := bin.SubImage(image.Rect(1, 1, 2, 2)).(*Binary)
+	sub := bin.SubImage(image.Rect(1, 1, 2, 2)).(*Image)
 	sub.SetBit(4, 4, On)
 
 	// getting a bit that is out of the image bound should return the zero
@@ -118,7 +118,7 @@ func TestColorModelIsComparable(t *testing.T) {
 
 func TestSetEmptyRect(t *testing.T) {
 	var (
-		bin *Binary
+		bin *Image
 	)
 
 	// create a 10x10 Binary image
@@ -133,7 +133,7 @@ func TestSetEmptyRect(t *testing.T) {
 
 func TestSetRect(t *testing.T) {
 	var (
-		bin *Binary
+		bin *Image
 		bit Bit
 	)
 
@@ -162,7 +162,7 @@ func TestSetRect(t *testing.T) {
 
 func TestSetOutOfBoundsRect(t *testing.T) {
 	var (
-		bin *Binary
+		bin *Image
 		bit Bit
 	)
 

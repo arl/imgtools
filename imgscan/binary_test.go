@@ -9,7 +9,7 @@ import (
 	"github.com/aurelien-rainone/imgtools/internal/test"
 )
 
-func newBinaryFromString(ss []string) *binimg.Binary {
+func newBinaryFromString(ss []string) *binimg.Image {
 	w, h := len(ss[0]), len(ss)
 	for i := range ss {
 		if len(ss[i]) != w {

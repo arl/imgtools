@@ -9,8 +9,8 @@
 // represent Bit pixels as byte values, that can either be 0 (Black or Off) or
 // 255 (White or On), mostly for simplicity reasons.
 //
-// Binary images are created either by calling functions such as NewFromImage
-// and NewBinary, or their counterparts accepting a custom binaryModel.
+// binimg.Image images are created either by calling functions such as
+// New and NewFromImage.
 package binimg
 
 import (
@@ -67,8 +67,8 @@ func model(c color.Color) color.Color {
 	return Black
 }
 
-// Binary is an in-memory image whose At method returns Bit values.
-type Binary struct {
+// Image is an in-memory image whose At method returns Bit values.
+type Image struct {
 	// Pix holds the image's pixels, as 0 or 1 uint8 values. The pixel at
 	// (x, y) starts at Pix[(y-Rect.Min.Y)*Stride + (x-Rect.Min.X)*1].
 	Pix []uint8
@@ -79,16 +79,16 @@ type Binary struct {
 }
 
 // ColorModel returns the image.Image's color model.
-func (b *Binary) ColorModel() color.Model { return Model }
+func (b *Image) ColorModel() color.Model { return Model }
 
 // Bounds returns the domain for which At can return non-zero color.
 // The bounds do not necessarily contain the point (0, 0).
-func (b *Binary) Bounds() image.Rectangle { return b.Rect }
+func (b *Image) Bounds() image.Rectangle { return b.Rect }
 
 // At returns the color of the pixel at (x, y).
 // At(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the grid.
 // At(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
-func (b *Binary) At(x, y int) color.Color {
+func (b *Image) At(x, y int) color.Color {
 	return b.BitAt(x, y)
 }
 
@@ -96,7 +96,7 @@ func (b *Binary) At(x, y int) color.Color {
 // BitAt(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the
 // grid. BitAt(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right
 // one.
-func (b *Binary) BitAt(x, y int) Bit {
+func (b *Image) BitAt(x, y int) Bit {
 	if !(image.Point{x, y}.In(b.Rect)) {
 		return Bit{}
 	}
@@ -106,14 +106,14 @@ func (b *Binary) BitAt(x, y int) Bit {
 
 // PixOffset returns the index of the first element of Pix that corresponds to
 // the pixel at (x, y).
-func (b *Binary) PixOffset(x, y int) int {
+func (b *Image) PixOffset(x, y int) int {
 	return (y-b.Rect.Min.Y)*b.Stride + (x-b.Rect.Min.X)*1
 }
 
 // Set sets the color of the pixel at (x, y).
 //
-// c is converted to Bit using the Binary image color model.
-func (b *Binary) Set(x, y int, c color.Color) {
+// c is converted to Bit using the image color model.
+func (b *Image) Set(x, y int, c color.Color) {
 	if !(image.Point{x, y}.In(b.Rect)) {
 		return
 	}
@@ -122,7 +122,7 @@ func (b *Binary) Set(x, y int, c color.Color) {
 }
 
 // SetBit sets the Bit of the pixel at (x, y).
-func (b *Binary) SetBit(x, y int, c Bit) {
+func (b *Image) SetBit(x, y int, c Bit) {
 	if !(image.Point{x, y}.In(b.Rect)) {
 		return
 	}
@@ -131,7 +131,7 @@ func (b *Binary) SetBit(x, y int, c Bit) {
 }
 
 // SetRect sets all the pixels in the rectangle defined by given rectangle.
-func (b *Binary) SetRect(r image.Rectangle, c Bit) {
+func (b *Image) SetRect(r image.Rectangle, c Bit) {
 	r = r.Intersect(b.Rect)
 	if !r.Empty() {
 		for y := r.Min.Y; y < r.Max.Y; y++ {
@@ -147,16 +147,16 @@ func (b *Binary) SetRect(r image.Rectangle, c Bit) {
 
 // SubImage returns an image representing the portion of the image p visible
 // through r. The returned value shares pixels with the original image.
-func (b *Binary) SubImage(r image.Rectangle) image.Image {
+func (b *Image) SubImage(r image.Rectangle) image.Image {
 	r = r.Intersect(b.Rect)
 	// If r1 and r2 are Rectangles, r1.Intersect(r2) is not guaranteed to be inside
 	// either r1 or r2 if the intersection is empty. Without explicitly checking for
 	// this, the Pix[i:] expression below can panic.
 	if r.Empty() {
-		return &Binary{}
+		return &Image{}
 	}
 	i := b.PixOffset(r.Min.X, r.Min.Y)
-	return &Binary{
+	return &Image{
 		Pix:    b.Pix[i:],
 		Stride: b.Stride,
 		Rect:   r,
@@ -164,22 +164,19 @@ func (b *Binary) SubImage(r image.Rectangle) image.Image {
 }
 
 // Opaque scans the entire image and reports whether it is fully opaque.
-func (b *Binary) Opaque() bool {
+func (b *Image) Opaque() bool {
 	return true
 }
 
-// New returns a new Binary image with the given bounds.
-//
-// The color model used by the returned binary image is the
-// BinaryModelMediumThreshold
-func New(r image.Rectangle) *Binary {
+// New returns a new binary image with the given bounds.
+func New(r image.Rectangle) *Image {
 	w, h := r.Dx(), r.Dy()
 	pix := make([]uint8, 1*w*h)
-	return &Binary{pix, 1 * w, r}
+	return &Image{pix, 1 * w, r}
 }
 
 // NewFromImage returns a new binary image that is the conversion of src image.
-func NewFromImage(src image.Image) *Binary {
+func NewFromImage(src image.Image) *Image {
 	dst := New(src.Bounds())
 	draw.Draw(dst, dst.Bounds(), src, image.Point{}, draw.Src)
 	return dst
