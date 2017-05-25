@@ -45,17 +45,23 @@ func TestBinaryScannerIsUniformColor(t *testing.T) {
 		{1, 1, 3, 3, binimg.On, false},
 		{1, 1, 3, 3, binimg.Off, false},
 		{0, 1, 1, 2, binimg.On, true},
+		{0, 1, 1, 2, color.White, true},
 		{0, 1, 1, 2, binimg.Off, false},
 		{0, 0, 1, 1, binimg.On, false},
 		{0, 0, 1, 1, binimg.Off, true},
+		{0, 0, 1, 1, color.Black, true},
 		{1, 0, 2, 1, binimg.On, false},
 		{1, 0, 2, 1, binimg.Off, true},
+		{1, 0, 2, 1, color.Black, true},
 		{1, 0, 3, 2, binimg.On, false},
 		{1, 0, 3, 2, binimg.Off, true},
+		{1, 0, 3, 2, color.Black, true},
 		{1, 2, 3, 3, binimg.On, true},
 		{1, 2, 3, 3, binimg.Off, false},
 		{2, 2, 3, 3, binimg.On, true},
+		{2, 2, 3, 3, color.White, true},
 		{2, 2, 3, 3, binimg.Off, false},
+		{2, 2, 3, 3, color.RGBA{12, 23, 34, 78}, false},
 	}
 
 	scanner, err := NewScanner(newBinaryFromString(ss))
