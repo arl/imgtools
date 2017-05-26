@@ -67,7 +67,7 @@ func (s *grayScanner) AverageColor(r image.Rectangle) (bool, color.Color) {
 
 	var sum uint64
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		for x := r.Min.X; y < r.Max.X; x++ {
+		for x := r.Min.X; x < r.Max.X; x++ {
 			sum += uint64(s.GrayAt(x, y).Y)
 		}
 	}
