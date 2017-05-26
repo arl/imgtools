@@ -15,21 +15,22 @@ type grayScanner struct {
 // The scan stops at the first pixel encountered that is different from c.
 func (s *grayScanner) IsUniformColor(r image.Rectangle, c color.Color) bool {
 	var (
-		ok   bool
-		gray color.Gray
+		ok   bool       // conversion to color.Gray ok
+		gray color.Gray // c converted to Gray
+		b    uint8      // gray level
+		last int        // index of last byte to check on the line
 	)
 	// ensure c is a color.Gray, or convert it
 	if gray, ok = c.(color.Gray); !ok {
 		gray = s.ColorModel().Convert(c).(color.Gray)
 	}
-	b := gray.Y
+	b, last = gray.Y, r.Max.X-r.Min.X-1
 
-	last := r.Max.Y - r.Min.Y - 1
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		i := s.PixOffset(r.Min.X, y)
 		j := s.PixOffset(r.Max.X, y)
 		// check the first and the last pixel/byte of color c are respectively
-		// the first and last pixel of the slice.
+		// the first and last pixels of the slice.
 		if bytes.IndexByte(s.Pix[i:j], b) != 0 || bytes.LastIndexByte(s.Pix[i:j], b) != last {
 			return false
 		}
