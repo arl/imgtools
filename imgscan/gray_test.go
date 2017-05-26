@@ -74,3 +74,34 @@ func TestGrayScannerIsUniformColor(t *testing.T) {
 		}
 	}
 }
+
+func TestGrayScannerIsUniform(t *testing.T) {
+	ss := []string{
+		"  0,   0,   0",
+		"122,   0,   0",
+		"  0,  24,  24",
+	}
+
+	var tests = []struct {
+		minx, miny, maxx, maxy int
+		col                    color.Color
+		uniform                bool
+	}{
+		{0, 0, 3, 3, nil, false},
+		{0, 1, 1, 2, color.Gray{122}, true},
+		{1, 2, 3, 3, color.Gray{24}, true},
+	}
+
+	img := newGrayFromString(ss)
+	scanner, err := NewScanner(img)
+	test.Check(t, err)
+	for _, tt := range tests {
+		uniform, col := scanner.IsUniform(image.Rect(tt.minx, tt.miny, tt.maxx, tt.maxy))
+		if uniform != tt.uniform {
+			t.Errorf("want uniform=%v for IsUniform(rect{%d,%d|%d,%d}), got %v", tt.uniform, tt.minx, tt.miny, tt.maxx, tt.maxy, uniform)
+		}
+		if col != tt.col {
+			t.Errorf("want color=%v for IsUniform(rect{%d,%d|%d,%d}), got %v", tt.col, tt.minx, tt.miny, tt.maxx, tt.maxy, col)
+		}
+	}
+}
