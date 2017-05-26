@@ -1,7 +1,7 @@
 package imgscan
 
 import (
-	"fmt"
+	"errors"
 	"image"
 	"image/color"
 
@@ -37,10 +37,15 @@ type Scanner interface {
 	AverageColor(r image.Rectangle) (bool, color.Color)
 }
 
+// ErrUnSupportedType is returned by NewScanner when an implementation of
+// imgscan.Scanner for the specific image type doesn't exist.
+var ErrUnsupportedType = errors.New("scanner: unsupported image type")
+
 // NewScanner returns a new Scanner of the given image.Image.
 //
 // The actual scanner implementation depends on the image bit depth and the
-// availability of an implementation.
+// availability of an implementation. If a specific implementation of Scanner
+// doesn't exist for the type of img, err will be ErrUnsupportedType.
 func NewScanner(img image.Image) (Scanner, error) {
 	var (
 		s   Scanner
@@ -52,8 +57,7 @@ func NewScanner(img image.Image) (Scanner, error) {
 	case *image.Gray:
 		s = NewGrayScanner(img.(*image.Gray))
 	default:
-		err = fmt.Errorf("unsupported image type")
-
+		err = ErrUnsupportedType
 	}
 	return s, err
 }
