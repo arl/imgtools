@@ -3,6 +3,7 @@ package imgtools
 import (
 	"image"
 	"image/color"
+	"image/draw"
 	"testing"
 
 	"github.com/aurelien-rainone/imgtools/internal/test"
@@ -10,7 +11,7 @@ import (
 
 func assertEqual(t *testing.T, a, b int) {
 	if a != b {
-		t.Fatalf("expected %v == %v, got !=", a, b)
+		t.Fatalf("want %v == %v, got !=", a, b)
 	}
 }
 
@@ -26,41 +27,60 @@ func TestPowerOf2Roundup(t *testing.T) {
 }
 
 func TestPowerOf2Image(t *testing.T) {
-	var (
-		src, dst image.Image
-		err      error
-	)
-	src, err = test.LoadPNG("./testdata/colorgopher.png")
-	test.Check(t, err)
+	blue := color.RGBA{0, 0, 255, 255}
+	red := color.RGBA{255, 0, 0, 255}
+	uniform := image.NewUniform(blue)
 
-	pad := color.RGBA{255, 0, 0, 255}
-	dst = PowerOf2Image(src, pad)
+	t.Run("pad a non power of 2 image", func(t *testing.T) {
+		var tests = []struct {
+			w, h int // org image dimensions
+		}{
+			{2, 3},
+			{12, 14},
+			{15, 17},
+			{16, 1},
+		}
 
-	b := dst.Bounds()
+		for _, tt := range tests {
+			m := image.NewRGBA(image.Rect(0, 0, tt.w, tt.h))
+			draw.Draw(m, m.Bounds(), uniform, image.ZP, draw.Src)
+			dst := PowerOf2Image(m, red)
 
-	assertEqual(t, b.Dx(), b.Dy())
+			b := dst.Bounds()
 
-	corner := dst.At(b.Max.X-1, b.Max.Y-1)
-	if corner != pad {
-		t.Errorf("lower-left pixel should have the %v color, got %v instead", pad, corner)
-	}
-}
+			// width and height of new images should be equal
+			assertEqual(t, b.Dx(), b.Dy())
 
-func TestAlreadyPowerOf2Image(t *testing.T) {
-	var (
-		src, dst image.Image
-		err      error
-	)
-	src, err = test.LoadPNG("./testdata/bwgopher.bottom-left.png")
-	test.Check(t, err)
+			if pow2roundup(b.Dx()) != b.Dx() {
+				t.Errorf("dimension of new image should be a power of 2, got %v", b.Dx())
+			}
 
-	pad := color.RGBA{255, 0, 0, 255}
-	dst = PowerOf2Image(src, pad)
+			if topLeft := dst.At(0, 0); topLeft != blue {
+				t.Errorf("want top-left pixel color unchanged (blue), got %v", topLeft)
+			}
+			if bottomRight := dst.At(b.Dx()-1, b.Dy()-1); bottomRight != red {
+				t.Errorf("want bottom-right pixel red (padding), got %v", bottomRight)
+			}
+		}
+	})
+	t.Run("let power of 2 image as is", func(t *testing.T) {
+		m := image.NewRGBA(image.Rect(0, 0, 16, 16))
+		draw.Draw(m, m.Bounds(), uniform, image.ZP, draw.Src)
+		dst := PowerOf2Image(m, red)
 
-	b := dst.Bounds()
+		b := dst.Bounds()
 
-	assertEqual(t, b.Dx(), b.Dy())
-	if src != dst {
-		t.Errorf("expecting PowerOf2Image to return src, as it is already a power-of-2 square")
-	}
+		// width and height of new images should be equal
+		assertEqual(t, b.Dx(), b.Dy())
+
+		if pow2roundup(b.Dx()) != b.Dx() {
+			t.Errorf("dimension of new image should be a power of 2, got %v", b.Dx())
+		}
+		if m != dst.(*image.RGBA) {
+			t.Errorf("want equal images, got different")
+		}
+		if err := test.Diff(m, dst); err != nil {
+			t.Errorf("want same images bytes, got different: %v", err)
+		}
+	})
 }
