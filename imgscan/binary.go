@@ -2,39 +2,32 @@ package imgscan
 
 import (
 	"bytes"
-	"fmt"
 	"image"
 	"image/color"
 
 	"github.com/aurelien-rainone/imgtools/binimg"
 )
 
-// NewScanner returns a new Scanner of the given image.Image.
-//
-// The actual scanner implementation depends on the image bit depth and the
-// availability of an implementation.
-func NewScanner(img image.Image) (Scanner, error) {
-	switch impl := img.(type) {
-	case *binimg.Binary:
-		return &binaryScanner{impl}, nil
-	case *image.Alpha:
-	case *image.Gray:
-	default:
-	}
-	return nil, fmt.Errorf("unsupported image type")
-}
-
 type binaryScanner struct {
-	*binimg.Binary
+	*binimg.Image
 }
 
 // IsUniformColor indicates if the region r is only made of pixels of color c.
 //
 // The scan stops at the first pixel encountered that is different from c.
 func (s *binaryScanner) IsUniformColor(r image.Rectangle, c color.Color) bool {
+	var (
+		ok  bool
+		bit binimg.Bit
+	)
+	// ensure c is a binimg.Bit, or convert it
+	if bit, ok = c.(binimg.Bit); !ok {
+		bit = s.ColorModel().Convert(c).(binimg.Bit)
+	}
+
 	// in a binary image, pixel/bytes are 1 or 0, we want the other color for
 	// bytes.IndexBytes
-	other := c.(binimg.Bit).Other().V
+	other := bit.Other().V
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		i := s.PixOffset(r.Min.X, y)
 		j := s.PixOffset(r.Max.X, y)
@@ -76,4 +69,9 @@ func (s *binaryScanner) AverageColor(r image.Rectangle) (bool, color.Color) {
 	}
 	// or consider the whole region as made of On pixel (arbitrary)
 	return false, binimg.On
+}
+
+// NewBinaryScanner creates a binary scanner from a binary image.
+func NewBinaryScanner(img *binimg.Image) Scanner {
+	return &binaryScanner{img}
 }

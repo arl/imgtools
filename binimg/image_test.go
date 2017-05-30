@@ -42,7 +42,7 @@ func TestEmptySubImage(t *testing.T) {
 
 func TestPixelOperations(t *testing.T) {
 	var (
-		bin *Binary
+		bin *Image
 		bit Bit
 	)
 
@@ -55,26 +55,26 @@ func TestPixelOperations(t *testing.T) {
 
 	// get/set pixel from color.Color
 	bin.Set(x, y, whiteRGBA)
-	bit = BinaryModel.Convert(bin.At(x, y)).(Bit)
+	bit = Model.Convert(bin.At(x, y)).(Bit)
 	if bit != On {
 		t.Errorf("want bit at (%d,%d) to be On, got %v", x, y, bit)
 	}
 
 	// get/set pixel from color.Color
 	bin.Set(x, y, blackRGBA)
-	bit = BinaryModel.Convert(bin.At(x, y)).(Bit)
+	bit = Model.Convert(bin.At(x, y)).(Bit)
 	if bit != Off {
 		t.Errorf("want bit at (%d,%d) to be Off, got %v", x, y, bit)
 	}
 
 	// setting a pixel that is out of the image bounds should not panic, nor do nothing
-	sub := bin.SubImage(image.Rect(1, 1, 2, 2)).(*Binary)
+	sub := bin.SubImage(image.Rect(1, 1, 2, 2)).(*Image)
 	sub.Set(4, 4, whiteRGBA)
 }
 
 func TestBitOperations(t *testing.T) {
 	var (
-		bin *Binary
+		bin *Image
 		bit Bit
 	)
 
@@ -97,13 +97,28 @@ func TestBitOperations(t *testing.T) {
 	}
 
 	// setting a bit that is out of the image bounds should not panic, nor do nothing
-	sub := bin.SubImage(image.Rect(1, 1, 2, 2)).(*Binary)
+	sub := bin.SubImage(image.Rect(1, 1, 2, 2)).(*Image)
 	sub.SetBit(4, 4, On)
+
+	// getting a bit that is out of the image bound should return the zero
+	// value of the color type
+	bit = sub.BitAt(4, 4)
+	var zero Bit
+	if bit != zero {
+		t.Errorf("expected BitAt to return Bit{} for out-of-bounds bit, got %v", bit)
+	}
+}
+
+func TestColorModelIsComparable(t *testing.T) {
+	bin := New(image.Rect(0, 0, 10, 10))
+	if bin.ColorModel() != Model {
+		t.Errorf("Binary.ColorModel should be comparable")
+	}
 }
 
 func TestSetEmptyRect(t *testing.T) {
 	var (
-		bin *Binary
+		bin *Image
 	)
 
 	// create a 10x10 Binary image
@@ -118,7 +133,7 @@ func TestSetEmptyRect(t *testing.T) {
 
 func TestSetRect(t *testing.T) {
 	var (
-		bin *Binary
+		bin *Image
 		bit Bit
 	)
 
@@ -147,7 +162,7 @@ func TestSetRect(t *testing.T) {
 
 func TestSetOutOfBoundsRect(t *testing.T) {
 	var (
-		bin *Binary
+		bin *Image
 		bit Bit
 	)
 

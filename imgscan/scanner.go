@@ -1,8 +1,11 @@
 package imgscan
 
 import (
+	"errors"
 	"image"
 	"image/color"
+
+	"github.com/aurelien-rainone/imgtools/binimg"
 )
 
 // A Scanner behaves as an image.Image, with added color scanning capabilities.
@@ -32,4 +35,29 @@ type Scanner interface {
 	// A full scan of the region is performed in order to determine the average
 	// color.
 	AverageColor(r image.Rectangle) (bool, color.Color)
+}
+
+// ErrUnSupportedType is returned by NewScanner when an implementation of
+// imgscan.Scanner for the specific image type doesn't exist.
+var ErrUnsupportedType = errors.New("scanner: unsupported image type")
+
+// NewScanner returns a new Scanner of the given image.Image.
+//
+// The actual scanner implementation depends on the image bit depth and the
+// availability of an implementation. If a specific implementation of Scanner
+// doesn't exist for the type of img, err will be ErrUnsupportedType.
+func NewScanner(img image.Image) (Scanner, error) {
+	var (
+		s   Scanner
+		err error
+	)
+	switch img.(type) {
+	case *binimg.Image:
+		s = NewBinaryScanner(img.(*binimg.Image))
+	case *image.Gray:
+		s = NewGrayScanner(img.(*image.Gray))
+	default:
+		err = ErrUnsupportedType
+	}
+	return s, err
 }
