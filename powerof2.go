@@ -26,7 +26,7 @@ func pow2roundup(x int) int {
 
 // newImage creates a new image having the same type as img, with r as
 // bounds.
-func newImage(img draw.Image, r image.Rectangle) (draw.Image, error) {
+func newImage(img image.Image, r image.Rectangle) (draw.Image, error) {
 	switch img.(type) {
 	case *image.Alpha:
 		return image.NewAlpha(r), nil
@@ -53,16 +53,14 @@ func newImage(img draw.Image, r image.Rectangle) (draw.Image, error) {
 	}
 }
 
-// PowerOf2Image returns a power-of-2 square image, on which src is copied over
-// at the origin point {0,0}.
+// PowerOf2Image returns a square image which dimension being a power-of-2, it
+// does so by creating such square image with uniform pad color, and copying the
+// pixels of src over it, at point { 0,0}.
 //
-// The new image has the dimensions of the smallest square that can contain the
-// whole src image. The process creates	an image of uniform color, with pad, and
-// copies the original image. pad is converted to src color.Model so that the
-// returned image has the same color model as the original.
 // Note: if src dimensions is already a power-of-2 square image, it is returned
-// as-is.
-func PowerOf2Image(src draw.Image, pad color.Color) (image.Image, error) {
+// as-is.This is an helper function supports the standard Go image and
+// binimg.Image types.
+func PowerOf2Image(src image.Image, pad color.Color) (image.Image, error) {
 	if IsPowerOf2Image(src) {
 		return src, nil
 	}
