@@ -18,14 +18,14 @@ func assertEqual(t *testing.T, a, b int) {
 }
 
 func TestPowerOf2Roundup(t *testing.T) {
-	assertEqual(t, pow2roundup(0), 1)
-	assertEqual(t, pow2roundup(1), 1)
-	assertEqual(t, pow2roundup(2), 2)
-	assertEqual(t, pow2roundup(3), 4)
-	assertEqual(t, pow2roundup(15), 16)
-	assertEqual(t, pow2roundup(16), 16)
-	assertEqual(t, pow2roundup(127), 128)
-	assertEqual(t, pow2roundup(129), 256)
+	assertEqual(t, Pow2Roundup(0), 1)
+	assertEqual(t, Pow2Roundup(1), 1)
+	assertEqual(t, Pow2Roundup(2), 2)
+	assertEqual(t, Pow2Roundup(3), 4)
+	assertEqual(t, Pow2Roundup(15), 16)
+	assertEqual(t, Pow2Roundup(16), 16)
+	assertEqual(t, Pow2Roundup(127), 128)
+	assertEqual(t, Pow2Roundup(129), 256)
 }
 
 func TestPowerOf2Image(t *testing.T) {
@@ -54,7 +54,7 @@ func TestPowerOf2Image(t *testing.T) {
 			// width and height of new images should be equal
 			assertEqual(t, b.Dx(), b.Dy())
 
-			if pow2roundup(b.Dx()) != b.Dx() {
+			if Pow2Roundup(b.Dx()) != b.Dx() {
 				t.Errorf("dimension of new image should be a power of 2, got %v", b.Dx())
 			}
 
@@ -77,7 +77,7 @@ func TestPowerOf2Image(t *testing.T) {
 		// width and height of new images should be equal
 		assertEqual(t, b.Dx(), b.Dy())
 
-		if pow2roundup(b.Dx()) != b.Dx() {
+		if Pow2Roundup(b.Dx()) != b.Dx() {
 			t.Errorf("dimension of new image should be a power of 2, got %v", b.Dx())
 		}
 		if m != dst.(*image.RGBA) {
