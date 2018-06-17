@@ -12,3 +12,4 @@ Utilities for working with images in Go, completing the standard `image` package
 interface, that is an image with two possible values for each pixel.
 
 - [`imgtools/imgscan`](./imgscan/README.md) : fast scanning of rectangular regions of `image.Image`.
+
