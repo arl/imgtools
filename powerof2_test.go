@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/aurelien-rainone/imgtools/binimg"
-	"github.com/aurelien-rainone/imgtools/internal/test"
+	"github.com/arl/imgtools/binimg"
+	"github.com/arl/imgtools/internal/test"
 )
 
 func assertEqual(t *testing.T, a, b int) {

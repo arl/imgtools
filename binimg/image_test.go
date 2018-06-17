@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/aurelien-rainone/imgtools/internal/test"
+	"github.com/arl/imgtools/internal/test"
 )
 
 func TestIsOpaque(t *testing.T) {

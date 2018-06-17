@@ -4,7 +4,7 @@ import (
 	"image"
 	"testing"
 
-	"github.com/aurelien-rainone/imgtools/binimg"
+	"github.com/arl/imgtools/binimg"
 )
 
 func TestScannerSupportedImageTypes(t *testing.T) {

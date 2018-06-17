@@ -5,8 +5,8 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/aurelien-rainone/imgtools/binimg"
-	"github.com/aurelien-rainone/imgtools/internal/test"
+	"github.com/arl/imgtools/binimg"
+	"github.com/arl/imgtools/internal/test"
 )
 
 func newBinaryFromString(ss []string) *binimg.Image {
